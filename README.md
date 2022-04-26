@@ -1,7 +1,7 @@
 # Playerlist_Pinger
  
-Simple console application that pings user when any players from a given .txt file appears online (NO UI)
-Makes GET requests to minecraftlist.com to fetch data instead of having to use Minecraft Server API
+Simple console application that pings user when any players from a given .txt file appears online in a given server IP (Java Edition)
+Makes GET requests to minecraftlist.com to fetch data for user instead of having to use Minecraft Protocol
 
 
 
