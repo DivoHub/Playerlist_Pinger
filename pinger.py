@@ -24,10 +24,12 @@ class Config:
 
     #reinitialize all values for config file
     def start_new(self):
-        self.players = []
-        self.add_player()
-        self.change_server()
-        self.change_interval()
+        warning = input("This will erase your previous config file, are you sure? 'y' to continue.")
+        if (warning == 'y'):
+            self.players = []
+            self.add_player()
+            self.change_server()
+            self.change_interval()
 
     #loads config.json values / Initializes a config.json file if one is not found
     def load_config(self):
