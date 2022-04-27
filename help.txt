@@ -1,5 +1,15 @@
 Commands
------------
+-----------------------------
+
+start
+    -start checker
+
+stop
+    -stop checker
+
+exit
+    -exit application
+
 addplayer
     -append additional players to checking list
 
@@ -14,6 +24,9 @@ changeserver
 
 checkconfig
     -displays current config (players list, server ip, interval)
+
+fresh
+    -reinitialize, and create new config file
 
 help
     -displays command list
