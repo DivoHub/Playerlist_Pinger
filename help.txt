@@ -1,0 +1,19 @@
+Commands
+-----------
+addplayer
+    -append additional players to checking list
+
+delplayer
+    -delete specified player from checking list
+
+changeint
+    -change interval (seconds) between each online check
+
+changeserver
+    -change server IP to be checked
+
+checkconfig
+    -displays current config (players list, server ip, interval)
+
+help
+    -displays command list
