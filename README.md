@@ -2,14 +2,14 @@
  
 Simple console application that pings user when any specified players appear online in a given server IP (Java Edition)
 
-##Overview
+## Overview
 Makes GET requests to minecraftlist.com to fetch player list data on user's behalf
 
-#Usage
+# Usage
 ```bash
 py pinger.py
 ```
-##Contributing
+## Contributing
 Pull requests are welcome. Please specify fixes/changes.
 Telling me how trash the code is is also welcome
 
@@ -23,7 +23,7 @@ pip install playsound2
 [MIT](https://choosealicense.com/licenses/mit/)
 
 
-##Issues
+## Issues
 No UI
 Playsound causing delays between pings
 'stop' command must await sleep to finish
