@@ -5,12 +5,12 @@ Simple console application that pings user when any specified players appear onl
 ## Overview
 Makes GET requests to minecraftlist.com to fetch player list data on user's behalf
 
-# Usage
+## Usage
 ```bash
 py pinger.py
 ```
 ## Contributing
-Pull requests are welcome. Please specify fixes/changes.
+Pull requests are welcome. Please specify fixes/changes.  
 Telling me how trash the code is is also welcome
 
 ## Dependencies
@@ -24,6 +24,6 @@ pip install playsound2
 
 
 ## Issues
-No UI
-Playsound causing delays between pings
-'stop' command must await sleep to finish
+No UI  
+Playsound causing delays between pings  
+'stop' command must await sleep to finish  
