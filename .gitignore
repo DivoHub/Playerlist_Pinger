@@ -9,6 +9,8 @@ __pycache__/
 
 #configs
 config.json
+.gitattributes
+.idea/
 
 # Distribution / packaging
 .Python
