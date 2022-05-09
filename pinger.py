@@ -159,15 +159,15 @@ def checker():
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
         if (each_player not in currently_online_list):
-            print(f"     {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')}")
+            print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')}")
             currently_online_list.append(each_player)
             ding()
     for each_player in currently_online_list:
         if (each_player not in online_list):
-            print (f"{each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
+            print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
             currently_online_list.remove(each_player)
             ding()
-    print ("-----------------------------------")
+    #print ("-----------------------------------")
 
 def looper():
     global continue_condition
