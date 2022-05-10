@@ -153,7 +153,7 @@ def get_logged_list():
     for each_element in player_elements:
         player = each_element.find("span", class_="truncate")
         player_list.append(player)
-    logged_list = list(map(get_innerHTML, player_list)
+    logged_list = list(map(get_innerHTML, player_list))
     return logged_list
 
 #play notification sound
@@ -190,6 +190,7 @@ def checker():
 
     #print ("-----------------------------------")
 
+#iterative function, continues if user has not stopped
 def looper():
     global continue_condition
     while continue_condition:
@@ -201,6 +202,7 @@ def looper():
             else:
                 break
 
+#start application
 def start():
     if (threading.active_count() < 2):
         print ("Starting checker \n")
