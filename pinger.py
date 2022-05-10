@@ -25,11 +25,12 @@ class Config:
     #reinitialize all values for config file
     def start_new(self):
         warning = input("This will erase your previous config file, are you sure? 'y' to continue.")
-        if (warning == 'y'):
-            self.players = []
-            self.add_player()
-            self.change_server()
-            self.change_interval()
+        if not (warning == 'y'):
+            return
+        self.players = []
+        self.add_player()
+        self.change_server()
+        self.change_interval()
 
     #loads config.json values / Initializes a config.json file if one is not found
     def load_config(self):
@@ -130,7 +131,6 @@ def server_is_valid():
     else:
         return True
 
-
 #return list object with currently online players / makes GET request to URL
 def get_online_list():
     if not (server_is_valid()): #Return None is HTTP response code is above 399
@@ -142,6 +142,20 @@ def get_online_list():
     player_list = list(map(get_innerHTML, player_elements))
     return player_list
 
+def get_logged_list():
+    if not (server_is_valid()): #Return None is HTTP response code is above 399
+        print ("Error making HTTP request.")
+        return None
+    new_request = get("https://minecraftlist.com/servers/" + config.server)
+    html_doc = BeautifulSoup(new_request.text, "html.parser")
+    player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-600")
+    player_list = []
+    for each_element in player_elements:
+        player = each_element.find("span", class_="truncate")
+        player_list.append(player)
+    logged_list = list(map(get_innerHTML, player_list)
+    return logged_list
+
 #play notification sound
 def ding():
     while True:
@@ -152,10 +166,11 @@ def ding():
         else:
             break
 
-
+#checks for newly joined players and players who have logged
 def checker():
     global currently_online_list
     online_list = get_online_list()
+    logged_list = get_logged_list()
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
         if (each_player not in currently_online_list):
@@ -167,6 +182,12 @@ def checker():
             print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
             currently_online_list.remove(each_player)
             ding()
+    for each_player in logged_list:
+        if (each_player in currently_online_list):
+            print(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
+            currently_online_list.remove(each_player)
+            ding()
+
     #print ("-----------------------------------")
 
 def looper():
@@ -225,8 +246,6 @@ def main():
             print ("")
         else:
             print ("Unknown command.")
-
-
 
 if __name__ == '__main__':
     print ("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n-------------------------------------------")
