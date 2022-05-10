@@ -133,28 +133,19 @@ def server_is_valid():
 
 #return list object with currently online players / makes GET request to URL
 def get_online_list():
-    if not (server_is_valid()): #Return None is HTTP response code is above 399
+    if not (server_is_valid()): #Return None if HTTP response code is not valid
         print ("Error making HTTP request.")
         return None
     new_request = get("https://minecraftlist.com/servers/" + config.server)
     html_doc = BeautifulSoup(new_request.text, "html.parser")
-    player_elements = html_doc.find_all("span", class_="truncate")
-    player_list = list(map(get_innerHTML, player_elements))
-    return player_list
-
-def get_logged_list():
-    if not (server_is_valid()): #Return None is HTTP response code is above 399
-        print ("Error making HTTP request.")
-        return None
-    new_request = get("https://minecraftlist.com/servers/" + config.server)
-    html_doc = BeautifulSoup(new_request.text, "html.parser")
-    player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-600")
+    player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
     player_list = []
     for each_element in player_elements:
         player = each_element.find("span", class_="truncate")
         player_list.append(player)
-    logged_list = list(map(get_innerHTML, player_list))
-    return logged_list
+    online_list = list(map(get_innerHTML, player_list))
+    return online_list
+
 
 #play notification sound
 def ding():
@@ -170,7 +161,6 @@ def ding():
 def checker():
     global currently_online_list
     online_list = get_online_list()
-    logged_list = get_logged_list()
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
         if (each_player not in currently_online_list):
@@ -180,11 +170,6 @@ def checker():
     for each_player in currently_online_list:
         if (each_player not in online_list):
             print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
-            currently_online_list.remove(each_player)
-            ding()
-    for each_player in logged_list:
-        if (each_player in currently_online_list):
-            print(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
             currently_online_list.remove(each_player)
             ding()
 
