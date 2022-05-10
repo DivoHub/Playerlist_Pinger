@@ -174,8 +174,11 @@ def looper():
     while continue_condition:
         config.load_config()
         checker()
-        sleep(config.interval)
-
+        for timer in range (config.interval):
+            if continue_condition:
+                sleep(1)
+            else:
+                break
 
 def start():
     if (threading.active_count() < 2):
@@ -211,6 +214,7 @@ def main():
     while True:
         print ("-------------------------")
         user_input = input()
+        print ("-------------------------")
         if (user_input in command_dict.keys()):
             command_dict[user_input]()
         elif (user_input == "exit"):
