@@ -161,6 +161,8 @@ def ding():
 def checker():
     global currently_online_list
     online_list = get_online_list()
+    if (not online_list or online_list == None):
+        return
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
         if (each_player not in currently_online_list):
