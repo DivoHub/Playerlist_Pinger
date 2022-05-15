@@ -146,6 +146,10 @@ def get_online_list():
     online_list = list(map(get_innerHTML, player_list))
     return online_list
 
+def check_online_list():
+    online_list = get_online_list()
+    for each_player in online_list:
+        print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')}")
 
 #play notification sound
 def ding():
@@ -215,6 +219,7 @@ def main():
                     "delplayer": config.delete_player,
                     "changeint": config.change_interval,
                     "changeserver": config.change_server,
+                    "onlinenow": check_online_list,
                     "checkconfig": config.print_values,
                     "fresh": config.start_new,
                     "start": start,
