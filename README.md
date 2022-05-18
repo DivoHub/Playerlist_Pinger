@@ -24,6 +24,4 @@ pip install playsound2
 
 
 ## Issues
-No UI  
-Playsound causing delays between pings  
-'stop' command must await sleep to finish  
+No UI 
