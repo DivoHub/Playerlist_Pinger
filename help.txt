@@ -16,6 +16,9 @@ addplayer
 delplayer
     -delete specified player from checking list
 
+onlinenow
+    -print current list of players online
+
 changeint
     -change interval (seconds) between each online check
 
