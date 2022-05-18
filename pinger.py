@@ -126,7 +126,6 @@ def server_is_valid():
         get("https://minecraftlist.com/servers/" + config.server).ok
     except Exception:
         print ("Invalid server")
-        stop()
         return False
     else:
         return True
