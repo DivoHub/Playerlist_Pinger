@@ -16,7 +16,7 @@ Telling me how trash the code is is also welcome
 ## Dependencies
 ```bash
 pip install bs4
-pip install playsound2
+pip install simpleaudio
 ```
  
 ## License
