@@ -155,13 +155,18 @@ def check_online_list():
 #play notification sound
 def ding():
     audio_object = simpleaudio.WaveObject.from_wave_file("./ding.wav")
+    play_attempts = 0
     while True:
         try:
+            play_attempts += 1
             play = audio_object.play()
             play.wait_done()
         except Exception:
-            print ("Error playing sound")
-            time.sleep(1)
+            if (play_attempts == 3):
+                print ("Error with playing notification audio.")
+                break
+            else:
+                time.sleep(1)
         else:
             break
 
