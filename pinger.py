@@ -1,5 +1,7 @@
 import threading
-from playsound2 import playsound
+import time
+
+import simpleaudio
 from requests import get
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -152,11 +154,14 @@ def check_online_list():
 
 #play notification sound
 def ding():
+    audio_object = simpleaudio.WaveObject.from_wave_file("./ding.wav")
     while True:
         try:
-            playsound("./ding.wav")
+            play = audio_object.play()
+            play.wait_done()
         except Exception:
-            sleep(1)
+            print ("Error playing sound")
+            time.sleep(1)
         else:
             break
 
