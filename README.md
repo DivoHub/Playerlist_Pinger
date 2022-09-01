@@ -1,4 +1,4 @@
-# Playerlist Pinger For Java Edition Minecraft ![MC Icon](https://iili.io/6Jdw5g.png)
+# Playerlist Pinger For Java Edition Minecraft   ![MC Icon](https://iili.io/6Jdw5g.png)
  
 Simple console application that pings user when any specified players appear online in a given server IP (Java Edition)
 
@@ -14,7 +14,7 @@ pip install requests
 ## Usage
 1. Install dependencies using PIP
 
-2. from terminal run the following command
+2. Open terminal then run the following command:
 ```bash
 py pinger.py
 ```
