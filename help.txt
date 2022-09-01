@@ -19,14 +19,14 @@ delplayer
 onlinenow
     -print current list of players online
 
-changeint
-    -change interval (seconds) between each online check
+addserver
+    -add server IP to server list
 
-changeserver
-    -change server IP to be checked
+delserver
+    -delete server IP from server list
 
 checkconfig
-    -displays current config (players list, server ip, interval)
+    -displays current config (players list, and server IPs)
 
 fresh
     -reinitialize, and create new config file
