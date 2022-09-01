@@ -5,7 +5,16 @@ Simple console application that pings user when any specified players appear onl
 ## Overview
 Makes GET requests to minecraftlist.com to fetch player list data on user's behalf
 
+## Dependencies
+```bash
+pip install bs4
+pip install simpleaudio
+pip install requests
+```
 ## Usage
+1. Install dependencies using PIP
+
+2. from terminal run the following command
 ```bash
 py pinger.py
 ```
@@ -13,13 +22,7 @@ py pinger.py
 Pull requests are welcome. Please specify fixes/changes.  
 Telling me how trash the code is is also welcome
 
-## Dependencies
-```bash
-pip install bs4
-pip install simpleaudio
-pip install requests
-```
- 
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
