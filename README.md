@@ -20,7 +20,9 @@ python pinger.py
 ```
 3. Type and enter 'help' to see full list of commands.
 
-4. Type and enter 'start' to configurations have been initialized.
+4. Type and enter 'fresh' to initialize configurations.
+
+5. Type and enter 'start' to begin running checker
 
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
