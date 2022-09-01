@@ -1,5 +1,6 @@
 # Playerlist Pinger 
-For Java Edition Minecraft ![MC Icon](https://iili.io/6Jdw5g.png)
+![MC Icon](https://iili.io/6Jdw5g.png)
+For Java Edition Minecraft 
  
 Simple console application that pings user when any specified players appear online in a given server IP (Java Edition)
 
