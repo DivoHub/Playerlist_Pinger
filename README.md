@@ -17,6 +17,7 @@ Telling me how trash the code is is also welcome
 ```bash
 pip install bs4
 pip install simpleaudio
+pip install requests
 ```
  
 ## License
