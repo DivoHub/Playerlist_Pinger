@@ -14,10 +14,14 @@ pip install requests
 ## Usage
 1. Install dependencies using PIP
 
-2. Open terminal then run the following command:
+2. Open terminal from repository folder then run the following command:
 ```bash
-py pinger.py
+python pinger.py
 ```
+3. Type and enter 'help' to see full list of commands.
+
+4. Type and enter 'start' to configurations have been initialized.
+
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
 Telling me how trash the code is is also welcome
