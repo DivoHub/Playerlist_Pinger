@@ -29,7 +29,11 @@ checkconfig
     -displays current config (players list, and server IPs)
 
 fresh
-    -reinitialize, and create new config file
+    -reinitialize, and create new config file. First time users enter this command to start
 
 help
     -displays command list
+
+---------------------
+made by darrxh
+---------------------

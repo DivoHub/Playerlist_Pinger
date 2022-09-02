@@ -1,6 +1,4 @@
 import threading
-import time
-
 import simpleaudio
 from requests import get
 from bs4 import BeautifulSoup
@@ -9,11 +7,11 @@ import json
 from time import sleep
 
 
-
 class Config:
     def __init__(self):
         self.players = []
         self.servers = []
+        self.interval = 60
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -47,7 +45,7 @@ class Config:
             self.servers = json_file["servers"]
             playerlist_file.close()
 
-    #remove specified player from checking list
+    #remove specified player from checking list in config
     def delete_player(self):
         while True:
             del_player = input("Enter player name (case sensitive) enter 'x' when finished:    ")
@@ -85,6 +83,7 @@ class Config:
                 self.servers.append(new_server)
                 update_config(self.__dict__)
 
+    #delete specified player from checking list in config
     def delete_server(self):
         while True:
             del_server = input("Enter server name (case sensitive) enter 'x' when finished:    ")
@@ -96,17 +95,16 @@ class Config:
                 print ("Server is not in list")
         update_config(self.__dict__)
 
-    #change interval between each GET request (Not currently in use)
-    # def change_interval(self):
-    #     while True:
-    #         try:
-    #             self.interval = int(input("Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   "))
-    #             if (self.interval < 30): raise ValueError
-    #         except ValueError:
-    #             print ("Input Error")
-    #         else:
-    #             break
-    #     update_config(self.__dict__)
+    #change interval between each GET request
+    def change_interval(self):
+        while True:
+            try:
+                self.interval = int(input("Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   "))
+                if (self.interval < 30): raise ValueError
+            except ValueError:
+                print ("Input Error")
+            else:
+                break
 
 #Prints help manual to console
 def print_manual():
@@ -144,13 +142,15 @@ def server_is_valid(server):
     else:
         return True
 
-def get_refresh_interval(string):
-    if any(character.isdigit() for character in string):
-        string = string.replace("We last checked this server ", "")
-        string = string.replace(" minutes ago.", "")
-        return int(string) * 60
-    else:
-        return 0
+#update time interval between each refresh (not in use, troubleshoot)
+# def refresh_interval(string, server):
+#     global interval_dict
+#     if any(character.isdigit() for character in string):
+#         string = string.replace("We last checked this server ", "")
+#         string = string.replace(" minutes ago.", "")
+#         interval_dict[server] = 920 - (int(string) * 60)
+#     else:
+#         interval_dict[server] = 0
 
 #return list object with currently online players / makes GET request to URL
 def get_online_list(server):
@@ -160,8 +160,7 @@ def get_online_list(server):
     new_request = get("https://minecraftlist.com/servers/" + server)
     html_doc = BeautifulSoup(new_request.text, "html.parser")
     player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
-    last_checked = html_doc.find("p", class_="text-center text-gray-500").text
-    config.interval = get_refresh_interval(last_checked)
+    #last_checked = html_doc.find("p", class_="text-center text-gray-500").text
     player_list = []
     for each_element in player_elements:
         player = each_element.find("span", class_="truncate")
@@ -169,6 +168,7 @@ def get_online_list(server):
     online_list = list(map(get_innerHTML, player_list))
     return online_list
 
+#quick command function that displays to users all online players in config servers
 def check_online_list():
     for each_server in config.servers:
         online_list = get_online_list(each_server)
@@ -194,7 +194,7 @@ def sound_login():
                 print ("Error with playing notification audio.")
                 break
             else:
-                time.sleep(1)
+                sleep(1)
         else:
             break
 
@@ -212,10 +212,9 @@ def sound_logout():
                 print ("Error with playing notification audio.")
                 break
             else:
-                time.sleep(1)
+                sleep(1)
         else:
             break
-
 
 #checks for newly joined players and players who have logged
 def checker(server):
@@ -225,23 +224,25 @@ def checker(server):
         return
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
-        if (each_player not in currently_online_list):
-            print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')}")
-            currently_online_list.append(each_player)
+        if (each_player not in currently_online_list[server]):
+            print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+            currently_online_list[server].append(each_player)
             sound_login()
-    for each_player in currently_online_list:
+    for each_player in currently_online_list[server]:
         if (each_player not in online_list):
-            print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')}")
-            currently_online_list.remove(each_player)
+            print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+            currently_online_list[server].remove(each_player)
             sound_logout()
+
 
 #iterative function, continues if user has not stopped
 def looper():
     global continue_condition
+    global interval_dict
     while continue_condition:
         config.load_config()
-        for each_server in config.servers:
-            checker(each_server)
+        for server in config.servers:
+            checker(server)
         for timer in range (config.interval):
             if continue_condition:
                 sleep(1)
@@ -259,6 +260,7 @@ def start():
     process = threading.Thread(target=looper)
     process.start()
 
+#stop application
 def stop():
     if (threading.active_count() == 1):
         print ("Checker not running.\n")
@@ -300,8 +302,13 @@ if __name__ == '__main__':
     print ("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n-------------------------------------------")
     global continue_condition
     global currently_online_list
-    currently_online_list = []
+    global interval_dict
     config = Config()
     config.load_config()
     config.print_values()
+    currently_online_list = dict()
+    interval_dict = dict()
+    for each_server in config.servers:
+        currently_online_list[each_server] = []
+        interval_dict[each_server] = 0
     main()
