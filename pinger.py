@@ -172,6 +172,7 @@ def get_online_list(server):
 def check_online_list():
     for each_server in config.servers:
         online_list = get_online_list(each_server)
+        sleep(2)
         if (online_list == None):
             return
         elif (len(online_list) == 0):
@@ -217,23 +218,27 @@ def sound_logout():
             break
 
 #checks for newly joined players and players who have logged
-def checker(server):
+def checker():
     global currently_online_list
-    online_list = get_online_list(server)
-    if (not online_list or online_list == None):
-        return
-    found_list = list(set(config.players).intersection(online_list))
-    for each_player in found_list:
-        if (each_player not in currently_online_list[server]):
-            print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
-            currently_online_list[server].append(each_player)
-            sound_login()
-    for each_player in currently_online_list[server]:
-        if (each_player not in online_list):
-            print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
-            currently_online_list[server].remove(each_player)
-            sound_logout()
-
+    for server in config.servers:
+        online_list = get_online_list(server)
+        if (not online_list or online_list == None):
+            for each_player in currently_online_list[server]:
+                print(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                currently_online_list[server].remove(each_player)
+                sound_logout()
+            return
+        found_list = list(set(config.players).intersection(online_list))
+        for each_player in found_list:
+            if (each_player not in currently_online_list[server]):
+                print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                currently_online_list[server].append(each_player)
+                sound_login()
+        for each_player in currently_online_list[server]:
+            if (each_player not in online_list):
+                print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                currently_online_list[server].remove(each_player)
+                sound_logout()
 
 #iterative function, continues if user has not stopped
 def looper():
@@ -241,8 +246,7 @@ def looper():
     global interval_dict
     while continue_condition:
         config.load_config()
-        for server in config.servers:
-            checker(server)
+        checker()
         for timer in range (config.interval):
             if continue_condition:
                 sleep(1)
