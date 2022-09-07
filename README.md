@@ -12,7 +12,7 @@ pip install simpleaudio
 pip install requests
 ```
 ## Usage
-1. Clone Repo or inzip folder into computer
+1. Clone Repo or download/unzip folder onto local machine
 
 2. Install dependencies using PIP
 
@@ -20,6 +20,7 @@ pip install requests
 ```bash
 python pinger.py
 ```
+Or
 
 ```bash
 python3 pinger.py
