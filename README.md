@@ -12,17 +12,23 @@ pip install simpleaudio
 pip install requests
 ```
 ## Usage
-1. Install dependencies using PIP
+1. Clone Repo or inzip folder into computer
 
-2. Open terminal from repository folder then run the following command:
+2. Install dependencies using PIP
+
+3. Open terminal from repository folder then run the following command:
 ```bash
 python pinger.py
 ```
-3. Type and enter 'help' to see full list of commands.
 
+```bash
+python3 pinger.py
+```
 4. Type and enter 'fresh' to initialize configurations.
 
 5. Type and enter 'start' to begin running checker
+
+- Type and enter 'help' to see full list of commands
 
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
