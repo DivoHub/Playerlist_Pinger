@@ -157,16 +157,21 @@ def get_online_list(server):
     if not (server_is_valid(server)): #Return None if HTTP response code is not valid
         print ("Error making HTTP request.")
         return None
-    new_request = get("https://minecraftlist.com/servers/" + server)
-    html_doc = BeautifulSoup(new_request.text, "html.parser")
-    player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
-    #last_checked = html_doc.find("p", class_="text-center text-gray-500").text
-    player_list = []
-    for each_element in player_elements:
-        player = each_element.find("span", class_="truncate")
-        player_list.append(player)
-    online_list = list(map(get_innerHTML, player_list))
-    return online_list
+    try:
+        new_request = get("https://minecraftlist.com/servers/" + server)
+    except Exception:
+        print ("Error making HTTP request")
+        return None
+    else:
+        html_doc = BeautifulSoup(new_request.text, "html.parser")
+        player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
+        #last_checked = html_doc.find("p", class_="text-center text-gray-500").text
+        player_list = []
+        for each_element in player_elements:
+            player = each_element.find("span", class_="truncate")
+            player_list.append(player)
+        online_list = list(map(get_innerHTML, player_list))
+        return online_list
 
 #quick command function that displays to users all online players in config servers
 def check_online_list():
