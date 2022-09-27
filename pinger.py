@@ -71,7 +71,7 @@ class Config:
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
         try:
-            self.target = int(input("Enter number of "))
+            self.target = int(input("Enter target size to ping user for:  "))
         except ValueError:
             print ("Invalid input given.")
         else:
