@@ -25,6 +25,9 @@ addserver
 delserver
     -delete server IP from server list
 
+changetarget
+    -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
+
 checkconfig
     -displays current config (players list, and server IPs)
 

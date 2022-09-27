@@ -11,6 +11,7 @@ class Config:
     def __init__(self):
         self.players = []
         self.servers = []
+        self.target = 0
         self.interval = 60
 
     #Prompts user to add values to config and creates config.json file with those values
@@ -27,6 +28,7 @@ class Config:
             return
         self.players = []
         self.servers = []
+        self.target = 0
         self.add_player()
         self.add_server()
 
@@ -43,6 +45,7 @@ class Config:
             json_file = json.load(playerlist_file)
             self.players = json_file["players"]
             self.servers = json_file["servers"]
+            self.target = json_file["target"]
             playerlist_file.close()
 
     #remove specified player from checking list in config
@@ -63,6 +66,16 @@ class Config:
         print (f"Checking on Server IP: {self.servers} \n")
         print(f"Number of Players checking: {len(self.players)}")
         print (f"Checking for players: {self.players} \n")
+        print(f"Ping when server size reaches: {self.target} \n")
+
+    #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
+    def change_target(self):
+        try:
+            self.target = int(input("Enter number of "))
+        except ValueError:
+            print ("Invalid input given.")
+        else:
+            update_config(self.__dict__)
 
     #append new players to players list
     def add_player(self):
@@ -244,6 +257,9 @@ def checker():
                 print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
                 sound_logout()
+        if (len(online_list) >= config.target):
+            print(f"{server} has hit {config.target} players.")
+            sound_login()
 
 #iterative function, continues if user has not stopped
 def looper():
@@ -286,6 +302,7 @@ def main():
                     "addserver": config.add_server,
                     "delserver": config.delete_server,
                     "onlinenow": check_online_list,
+                    "changetarget": config.change_target,
                     "checkconfig": config.print_values,
                     "fresh": config.start_new,
                     "start": start,
