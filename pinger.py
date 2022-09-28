@@ -238,6 +238,7 @@ def sound_logout():
 #checks for newly joined players and players who have logged
 def checker():
     global currently_online_list
+    global target_reached
     for server in config.servers:
         online_list = get_online_list(server)
         if (not online_list or online_list == None):
@@ -257,9 +258,12 @@ def checker():
                 print (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
                 sound_logout()
-        if (len(online_list) >= config.target):
-            print(f"{server} has hit {config.target} players.")
+        if (len(online_list) >= config.target and target_reached[server] is False):
+            target_reached[server] = True
+            print(f"{server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}")
             sound_login()
+        elif (len(online_list) < config.target and target_reached[server] is True):
+            target_reached[server] = False
 
 #iterative function, continues if user has not stopped
 def looper():
@@ -329,12 +333,15 @@ if __name__ == '__main__':
     global continue_condition
     global currently_online_list
     global interval_dict
+    global target_reached
     config = Config()
     config.load_config()
     config.print_values()
     currently_online_list = dict()
     interval_dict = dict()
+    target_reached = dict()
     for each_server in config.servers:
         currently_online_list[each_server] = []
         interval_dict[each_server] = 0
+        target_reached[each_server] = False
     main()
