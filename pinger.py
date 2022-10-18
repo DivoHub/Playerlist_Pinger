@@ -169,12 +169,12 @@ def server_is_valid(server):
 def get_online_list(server):
     if not (server_is_valid(server)): #Return None if HTTP response code is not valid
         print ("Error making HTTP request.")
-        return None
+        return False
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
         print ("Error making HTTP request")
-        return None
+        return False
     else:
         html_doc = BeautifulSoup(new_request.text, "html.parser")
         player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
@@ -241,7 +241,7 @@ def checker():
     global target_reached
     for server in config.servers:
         online_list = get_online_list(server)
-        if (not online_list or online_list == None):
+        if (not online_list):
             for each_player in currently_online_list[server]:
                 print(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
