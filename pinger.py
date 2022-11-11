@@ -143,18 +143,23 @@ def get_innerHTML(element):
     return element.string
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
-def server_is_valid(server):
-    if (server == ""):
-        print ("No Server IP given")
-        return False
-    try:
-        status_code = get("https://minecraftlist.com/servers/" + server).status_code
-        if (status_code >= 200 and status_code <= 299):
-            return True
-        else:
+def server_is_valid():
+    for server in config.servers:
+        if (server == "" or len(config.servers) == 0):
+            print ("No Server IP given")
             return False
-    except Exception:
-        return False
+        try:
+            status_code = get("https://minecraftlist.com/servers/" + server).status_code
+            if (status_code >= 200 and status_code <= 299):
+                return True
+            elif (status_code == 404):
+                print("Invalid Server entered.")
+                return False
+            else:
+                print("Connection error")
+                return False
+        except Exception:
+            return False
 
 
 #update time interval between each refresh (not in use, troubleshoot)
@@ -169,13 +174,9 @@ def server_is_valid(server):
 
 #return list object with currently online players / makes GET request to URL
 def get_online_list(server):
-    if not (server_is_valid(server)): #Return None if HTTP response code is not valid
-        print (f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}.")
-        return False
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
-        print (f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
         return False
     else:
         html_doc = BeautifulSoup(new_request.text, "html.parser")
@@ -244,6 +245,10 @@ def checker():
     for server in config.servers:
         online_list = get_online_list(server)
         if (online_list == False):
+            print(f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
+            return
+
+        elif (online_list == None):
             for each_player in currently_online_list[server]:
                 print(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
@@ -285,6 +290,8 @@ def start():
     if (threading.active_count() > 1):
         print("Checker already running. \n")
         return
+    if not(server_is_valid()):
+        print ("Invalid server error...\n check configurations or connection, and try again")
     print ("Starting checker \n")
     global continue_condition
     continue_condition = True
