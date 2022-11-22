@@ -162,6 +162,14 @@ def server_is_valid():
             return False
 
 
+
+def toggle_logger():
+    global logger_is_on
+    if (logger_is_on):
+        logger_is_on = False
+    else:
+        logger_is_on = True
+
 #update time interval between each refresh (not in use, troubleshoot)
 # def refresh_interval(string, server):
 #     global interval_dict
@@ -317,6 +325,7 @@ def main():
                     "onlinenow": check_online_list,
                     "changetarget": config.change_target,
                     "checkconfig": config.print_values,
+                    "logger": toggle_logger(),
                     "fresh": config.start_new,
                     "start": start,
                     "stop": stop,
@@ -343,12 +352,14 @@ if __name__ == '__main__':
     global currently_online_list
     global interval_dict
     global target_reached
+    global logger_is_on
     config = Config()
     config.load_config()
     config.print_values()
     currently_online_list = dict()
     interval_dict = dict()
     target_reached = dict()
+    logger_is_on = False
     for each_server in config.servers:
         currently_online_list[each_server] = []
         interval_dict[each_server] = 0
