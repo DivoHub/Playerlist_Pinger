@@ -163,7 +163,7 @@ def server_is_valid():
 
 def logger(status_string):
     try:
-        log_file = open('log.txt', 'w')
+        log_file = open('log.txt', 'a')
     except FileNotFoundError:
         log_file = open('log.txt', 'x')
     finally:
