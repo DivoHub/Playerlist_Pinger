@@ -163,7 +163,7 @@ def server_is_valid():
 
 def logger(status_string):
     try:
-        log_file = open('log.txt'), 'w')
+        log_file = open('log.txt', 'w')
     except FileNotFoundError:
         log_file = open('log.txt', 'x')
     finally:
@@ -299,7 +299,7 @@ def looper():
         config.load_config()
         status_log = checker()
         for each_status in status_log:
-            print each_status
+            print (each_status)
             if logger_is_on:
                 logger(each_status)
         for timer in range (config.interval):
@@ -340,7 +340,7 @@ def main():
                     "onlinenow": check_online_list,
                     "changetarget": config.change_target,
                     "checkconfig": config.print_values,
-                    "logger": toggle_logger(),
+                    "logger": toggle_logger,
                     "fresh": config.start_new,
                     "start": start,
                     "stop": stop,
