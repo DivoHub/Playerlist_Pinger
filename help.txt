@@ -17,7 +17,7 @@ delplayer
     -delete specified player from checking list
 
 logger
-    -toggle logger on and off
+    -toggle logger on and off. Creates txt file if no log file exists
 
 onlinenow
     -print current list of players online
