@@ -161,6 +161,7 @@ def server_is_valid():
         except Exception:
             return False
 
+#appends each status into log file in local folder. Creates log file if none exists
 def logger(status_string):
     try:
         log_file = open('log.txt', 'a')
@@ -169,6 +170,7 @@ def logger(status_string):
     finally:
         log_file.write(status_string + "\n")
 
+#turn off and on logger module.
 def toggle_logger():
     global logger_is_on
     if (logger_is_on):
@@ -194,6 +196,7 @@ def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
+        print (f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
         return False
     else:
         html_doc = BeautifulSoup(new_request.text, "html.parser")
@@ -255,22 +258,24 @@ def sound_logout():
         else:
             break
 
+#check if server size has reached specified target number
+def target_check(player_count, server):
+    global target_reached
+    if (player_count >= config.target and target_reached[server] is False):
+        target_reached[server] = True
+        print(f"{server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}")
+        sound_login()
+    elif (player_count < config.target and target_reached[server] is True):
+        target_reached[server] = False
+
 #checks for newly joined players and players who have logged
 def checker():
     global currently_online_list
-    global target_reached
     for server in config.servers:
         online_list = get_online_list(server)
         log_list = []
         if (online_list == False):
-            log_list.append(f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
-            return log_list
-        elif (online_list == None):
-            for each_player in currently_online_list[server]:
-                log_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
-                currently_online_list[server].remove(each_player)
-                sound_logout()
-            return log_list
+            return
         found_list = list(set(config.players).intersection(online_list))
         for each_player in found_list:
             if (each_player not in currently_online_list[server]):
@@ -282,12 +287,7 @@ def checker():
                 log_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
                 sound_logout()
-        if (len(online_list) >= config.target and target_reached[server] is False):
-            target_reached[server] = True
-            log_list.append(f"{server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}")
-            sound_login()
-        elif (len(online_list) < config.target and target_reached[server] is True):
-            target_reached[server] = False
+        target_check(len(online_list), server)
         return log_list
 
 #iterative function, continues if user has not stopped
@@ -337,9 +337,9 @@ def main():
                     "delplayer": config.delete_player,
                     "addserver": config.add_server,
                     "delserver": config.delete_server,
-                    "onlinenow": check_online_list,
-                    "changetarget": config.change_target,
-                    "checkconfig": config.print_values,
+                    "online": check_online_list,
+                    "target": config.change_target,
+                    "config": config.print_values,
                     "logger": toggle_logger,
                     "fresh": config.start_new,
                     "start": start,

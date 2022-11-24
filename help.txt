@@ -16,22 +16,22 @@ addplayer
 delplayer
     -delete specified player from checking list
 
-logger
-    -toggle logger on and off. Creates txt file if no log file exists
-
-onlinenow
-    -print current list of players online
-
 addserver
     -add server IP to server list
 
 delserver
     -delete server IP from server list
 
-changetarget
+logger
+    -toggle logger on and off. Creates txt file if no log file exists
+
+online
+    -print current list of players online
+
+target
     -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
 
-checkconfig
+config
     -displays current config (players list, and server IPs)
 
 fresh
