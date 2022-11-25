@@ -1,9 +1,9 @@
-import threading
-import simpleaudio
+from threading import Thread, active_count
+from simpleaudio import WaveObject
 from requests import get
 from bs4 import BeautifulSoup
 from datetime import datetime
-import json
+from json import dumps, load
 from time import sleep
 
 
@@ -42,7 +42,7 @@ class Config:
         except Exception:
             print ("Other error occurred.")
         else:
-            json_file = json.load(playerlist_file)
+            json_file = load(playerlist_file)
             self.players = json_file["players"]
             self.servers = json_file["servers"]
             self.target = json_file["target"]
@@ -134,7 +134,7 @@ def create_config():
 #update config.json file / takes dictionary argument from Config object instance
 def update_config(dict_object):
     new_file = open('config.json', 'w')
-    json_object = json.dumps(dict_object, indent=2)
+    json_object = dumps(dict_object, indent=2)
     new_file.write(json_object)
     new_file.close()
 
@@ -178,7 +178,7 @@ def toggle_logger():
         print ("Logger turned off.")
     else:
         logger_is_on = True
-        print ("logger turn on")
+        print ("logger turned on")
     return
 
 #update time interval between each refresh (not in use, troubleshoot)
@@ -224,7 +224,7 @@ def check_online_list():
 
 #play notification sound for login
 def sound_login():
-    audio_object = simpleaudio.WaveObject.from_wave_file("./login.wav")
+    audio_object = WaveObject.from_wave_file("./login.wav")
     play_attempts = 0
     while True:
         try:
@@ -242,7 +242,7 @@ def sound_login():
 
 #play notification sound for logout
 def sound_logout():
-    audio_object = simpleaudio.WaveObject.from_wave_file("./logoff.wav")
+    audio_object = WaveObject.from_wave_file("./logoff.wav")
     play_attempts = 0
     while True:
         try:
@@ -273,9 +273,9 @@ def checker():
     global currently_online_list
     for server in config.servers:
         online_list = get_online_list(server)
-        log_list = []
         if (online_list == False):
-            return
+            return []
+        log_list = []
         found_list = list(set(config.players).intersection(online_list))
         for each_player in found_list:
             if (each_player not in currently_online_list[server]):
@@ -310,7 +310,7 @@ def looper():
 
 #start application
 def start():
-    if (threading.active_count() > 1):
+    if (active_count() > 1):
         print("Checker already running. \n")
         return
     if not(server_is_valid()):
@@ -318,12 +318,12 @@ def start():
     print ("Starting checker \n")
     global continue_condition
     continue_condition = True
-    process = threading.Thread(target=looper)
+    process = Thread(target=looper)
     process.start()
 
 #stop application
 def stop():
-    if (threading.active_count() == 1):
+    if (active_count() == 1):
         print ("Checker not running.\n")
         return
     print ("Stopping checker.\n")
@@ -333,6 +333,8 @@ def stop():
     currently_online_list = []
 
 def main():
+
+
     command_dict = {"addplayer": config.add_player,
                     "delplayer": config.delete_player,
                     "addserver": config.add_server,
@@ -362,7 +364,7 @@ def main():
             print ("Unknown command.")
 
 if __name__ == '__main__':
-    print ("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n-------------------------------------------")
+    print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n-------------------------------------------")
     global continue_condition
     global currently_online_list
     global interval_dict
