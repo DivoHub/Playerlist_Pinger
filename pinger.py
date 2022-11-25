@@ -330,11 +330,10 @@ def stop():
     global continue_condition
     global currently_online_list
     continue_condition = False
-    currently_online_list = []
+    for each_server in config.servers:
+        currently_online_list[each_server] = []
 
 def main():
-
-
     command_dict = {"addplayer": config.add_player,
                     "delplayer": config.delete_player,
                     "addserver": config.add_server,
