@@ -25,6 +25,9 @@ delserver
 logger
     -toggle logger on and off. Creates txt file if no log file exists
 
+newlog
+    -start a new log file
+
 online
     -print current list of players online
 

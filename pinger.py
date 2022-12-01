@@ -169,6 +169,16 @@ def logger(status_string):
         log_file = open('log.txt', 'x')
     finally:
         log_file.write(status_string + "\n")
+        log_file.close()
+
+def refresh_log():
+    try:
+        log_file = open('log.txt', 'w')
+    except FileNotFoundError:
+        log_file = open('log.txt', 'x')
+    finally:
+        log_file.write("")
+        log_file.close()
 
 #turn off and on logger module.
 def toggle_logger():
@@ -224,39 +234,29 @@ def check_online_list():
 
 #play notification sound for login
 def sound_login():
-    audio_object = WaveObject.from_wave_file("./login.wav")
-    play_attempts = 0
-    while True:
         try:
-            play_attempts += 1
+            audio_object = WaveObject.from_wave_file("./login.wav")
             play = audio_object.play()
             play.wait_done()
+        except FileNotFoundError:
+            print("No sound file found.")
         except Exception:
-            if (play_attempts == 3):
-                print ("Error with playing notification audio.")
-                break
-            else:
-                sleep(1)
-        else:
-            break
+            print ("Error with playing notification audio.")
+        finally:
+            return
 
 #play notification sound for logout
 def sound_logout():
-    audio_object = WaveObject.from_wave_file("./logoff.wav")
-    play_attempts = 0
-    while True:
-        try:
-            play_attempts += 1
-            play = audio_object.play()
-            play.wait_done()
-        except Exception:
-            if (play_attempts == 3):
-                print ("Error with playing notification audio.")
-                break
-            else:
-                sleep(1)
-        else:
-            break
+    try:
+        audio_object = WaveObject.from_wave_file("./logoff.wav")
+        play = audio_object.play()
+        play.wait_done()
+    except FileNotFoundError:
+        print ("No sound file found.")
+    except Exception:
+        print ("Error with playing notification audio.")
+    finally:
+        return
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
@@ -342,6 +342,7 @@ def main():
                     "target": config.change_target,
                     "config": config.print_values,
                     "logger": toggle_logger,
+                    "newlog": refresh_log,
                     "fresh": config.start_new,
                     "start": start,
                     "stop": stop,
