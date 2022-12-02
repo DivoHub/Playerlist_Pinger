@@ -223,7 +223,6 @@ def get_online_list(server):
 def check_online_list():
     for each_server in config.servers:
         online_list = get_online_list(each_server)
-        sleep(2)
         if (online_list == None):
             return
         elif (len(online_list) == 0):
@@ -290,6 +289,15 @@ def checker():
         target_check(len(online_list), server)
         return log_list
 
+
+def wait():
+    global continue_condition
+    for timer in range(config.interval):
+        if continue_condition:
+            sleep(1)
+        else:
+            break
+
 #iterative function, continues if user has not stopped
 def looper():
     global continue_condition
@@ -302,11 +310,8 @@ def looper():
             print (each_status)
             if logger_is_on:
                 logger(each_status)
-        for timer in range (config.interval):
-            if continue_condition:
-                sleep(1)
-            else:
-                break
+        wait()
+
 
 #start application
 def start():
