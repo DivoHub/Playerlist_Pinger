@@ -289,7 +289,7 @@ def checker():
         target_check(len(online_list), server)
         return log_list
 
-
+#Halts program for configured time before making another request
 def wait():
     global continue_condition
     for timer in range(config.interval):
@@ -311,7 +311,6 @@ def looper():
             if logger_is_on:
                 logger(each_status)
         wait()
-
 
 #start application
 def start():
@@ -338,6 +337,7 @@ def stop():
     for each_server in config.servers:
         currently_online_list[each_server] = []
 
+#main user input command line interface for application
 def main():
     command_dict = {"addplayer": config.add_player,
                     "delplayer": config.delete_player,
