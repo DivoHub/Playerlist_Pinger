@@ -230,11 +230,12 @@ def check_online_list():
         else:
             for each_player in online_list:
                 print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server}")
+    play_sound("chime.wav")
 
-#play notification sound for login
-def sound_login():
+#play notification sound
+def play_sound(sound_file):
         try:
-            audio_object = WaveObject.from_wave_file("./login.wav")
+            audio_object = WaveObject.from_wave_file(f"./sounds/{sound_file}")
             play = audio_object.play()
             play.wait_done()
         except FileNotFoundError:
@@ -243,19 +244,6 @@ def sound_login():
             print ("Error with playing notification audio.")
         finally:
             return
-
-#play notification sound for logout
-def sound_logout():
-    try:
-        audio_object = WaveObject.from_wave_file("./logoff.wav")
-        play = audio_object.play()
-        play.wait_done()
-    except FileNotFoundError:
-        print ("No sound file found.")
-    except Exception:
-        print ("Error with playing notification audio.")
-    finally:
-        return
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
@@ -280,12 +268,12 @@ def checker():
             if (each_player not in currently_online_list[server]):
                 log_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].append(each_player)
-                sound_login()
+                play_sound("login.wav")
         for each_player in currently_online_list[server]:
             if (each_player not in online_list):
                 log_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
-                sound_logout()
+                play_sound("logout.wav")
         target_check(len(online_list), server)
         return log_list
 
