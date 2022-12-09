@@ -6,7 +6,7 @@ from datetime import datetime
 from json import dumps, load
 from time import sleep
 
-
+#Main configuration class
 class Config:
     def __init__(self):
         self.players = []
@@ -171,6 +171,7 @@ def logger(status_string):
         log_file.write(status_string + "\n")
         log_file.close()
 
+#reintiates another log file
 def refresh_log():
     try:
         log_file = open('log.txt', 'w')
@@ -239,7 +240,7 @@ def play_sound(sound_file):
             play = audio_object.play()
             play.wait_done()
         except FileNotFoundError:
-            print("No sound file found.")
+            print(f"{sound_file} file not found.")
         except Exception:
             print ("Error with playing notification audio.")
         finally:
@@ -251,7 +252,7 @@ def target_check(player_count, server):
     if (player_count >= config.target and target_reached[server] is False):
         target_reached[server] = True
         print(f"{server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}")
-        sound_login()
+        play_sound("chime.wav")
     elif (player_count < config.target and target_reached[server] is True):
         target_reached[server] = False
 
@@ -309,8 +310,7 @@ def start():
         print ("Invalid server error...\n check configurations or connection, and try again")
     print ("Starting checker \n")
     global continue_condition
-    continue_condition = True
-    process = Thread(target=looper)
+    continue_condition = True    process = Thread(target=looper)
     process.start()
 
 #stop application
