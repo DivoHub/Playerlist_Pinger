@@ -231,7 +231,7 @@ def check_online_list():
         else:
             for each_player in online_list:
                 print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server}")
-    play_sound("chime.wav")
+    play_sound(str("chime.wav"))
 
 #play notification sound
 def play_sound(sound_file):
@@ -239,6 +239,7 @@ def play_sound(sound_file):
             audio_object = WaveObject.from_wave_file(f"./sounds/{sound_file}")
             play = audio_object.play()
             play.wait_done()
+            play.stop()
         except FileNotFoundError:
             print(f"{sound_file} file not found.")
         except Exception:
@@ -252,7 +253,7 @@ def target_check(player_count, server):
     if (player_count >= config.target and target_reached[server] is False):
         target_reached[server] = True
         print(f"{server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}")
-        play_sound("chime.wav")
+        play_sound(str("chime.wav"))
     elif (player_count < config.target and target_reached[server] is True):
         target_reached[server] = False
 
@@ -269,12 +270,12 @@ def checker():
             if (each_player not in currently_online_list[server]):
                 log_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].append(each_player)
-                play_sound("login.wav")
+                play_sound(str("login.wav"))
         for each_player in currently_online_list[server]:
             if (each_player not in online_list):
                 log_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
                 currently_online_list[server].remove(each_player)
-                play_sound("logout.wav")
+                play_sound(str("logout.wav"))
         target_check(len(online_list), server)
         return log_list
 
