@@ -192,6 +192,17 @@ def toggle_logger():
         print ("logger turned on")
     return
 
+def toggle_all_players():
+    global log_all_players
+    if (log_all_players):
+        log_all_players = False
+        print ("Log All Players off.")
+    else:
+        log_all_players = True
+        print ("Log All Players On.")
+    return
+
+
 #update time interval between each refresh (not in use, troubleshoot)
 # def refresh_interval(string, server):
 #     global interval_dict
@@ -203,6 +214,7 @@ def toggle_logger():
 #         interval_dict[server] = 0
 
 #return list object with currently online players / makes GET request to URL
+
 def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
@@ -257,6 +269,14 @@ def target_check(player_count, server):
     elif (player_count < config.target and target_reached[server] is True):
         target_reached[server] = False
 
+def log_all(online_list, found_list, server):
+    log_list = []
+    for each_player in found_list:
+        online_list.remove(each_player)
+    for each_player in online_list:
+        log_list.append(f"> {each_player} seen on {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+    return log_list
+
 #checks for newly joined players and players who have logged
 def checker():
     global currently_online_list
@@ -277,6 +297,8 @@ def checker():
                 currently_online_list[server].remove(each_player)
                 play_sound(str("logout.wav"))
         target_check(len(online_list), server)
+        if (log_all_players):
+            log_list = log_list + log_all(online_list, found_list, server)
         return log_list
 
 #Halts program for configured time before making another request
@@ -311,7 +333,8 @@ def start():
         print ("Invalid server error...\n check configurations or connection, and try again")
     print ("Starting checker \n")
     global continue_condition
-    continue_condition = True    process = Thread(target=looper)
+    continue_condition = True
+    process = Thread(target=looper)
     process.start()
 
 #stop application
@@ -336,6 +359,7 @@ def main():
                     "target": config.change_target,
                     "config": config.print_values,
                     "logger": toggle_logger,
+                    "logall": toggle_all_players,
                     "newlog": refresh_log,
                     "fresh": config.start_new,
                     "start": start,
@@ -364,6 +388,7 @@ if __name__ == '__main__':
     global interval_dict
     global target_reached
     global logger_is_on
+    global log_all_players
     config = Config()
     config.load_config()
     config.print_values()
@@ -371,6 +396,7 @@ if __name__ == '__main__':
     interval_dict = dict()
     target_reached = dict()
     logger_is_on = False
+    log_all_players = False
     for each_server in config.servers:
         currently_online_list[each_server] = []
         interval_dict[each_server] = 0

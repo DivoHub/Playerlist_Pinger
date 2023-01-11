@@ -22,6 +22,9 @@ addserver
 delserver
     -delete server IP from server list
 
+logall
+    -Print and log all players who log onto the server (no notification sound if player not on checking list)
+
 logger
     -toggle logger on and off. Creates txt file if no log file exists
 
