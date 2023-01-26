@@ -22,6 +22,9 @@ addserver
 delserver
     -delete server IP from server list
 
+alt
+    -minecraftlist.com will sometimes run into issues, toggle this on to make requests to an alternative website
+
 logall
     -Print and log all players who log onto the server (no notification sound if player not on checking list)
 
