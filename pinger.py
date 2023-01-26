@@ -13,6 +13,7 @@ class Config:
         self.servers = []
         self.target = 0
         self.interval = 60
+        self.alt_links = []
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -46,6 +47,7 @@ class Config:
             self.players = json_file["players"]
             self.servers = json_file["servers"]
             self.target = json_file["target"]
+            self.alt_links = json_file["alt_links"]
             playerlist_file.close()
 
     #remove specified player from checking list in config
@@ -54,10 +56,32 @@ class Config:
             del_player = input("Enter player name (case sensitive) enter 'x' when finished:    ")
             if (del_player == "x"):
                 break
-            if (del_player in self.players):
+            elif (del_player in self.players):
                 self.players.remove(del_player)
             else:
-                print ("Player is not in list")
+                print ("Player is not found in config")
+        update_config(self.__dict__)
+
+    def add_alt_links(self):
+        while True:
+            new_link = input("Enter alt link for server on minecraft-statistic.net. enter 'x' when finished:    ")
+            if (new_link == "x"):
+                break
+            elif (new_link in self.alt_links):
+                print("Alt link is already on list.")
+            else:
+                self.alt_links.append(new_link)
+        update_config(self.__dict__)
+
+    def del_alt_links(self):
+        while True:
+            del_link = input("Enter alt link to be removed. enter 'x' when finished:    ")
+            if (del_link == "x"):
+                break
+            elif (del_link in self.alt_links):
+                self.alt_links.remove(del_link)
+            else:
+                print ("Alt link not found in config.")
         update_config(self.__dict__)
 
     #prints config values to console
@@ -83,7 +107,10 @@ class Config:
             new_player = input("Enter player name (enter 'x' when finished):    ")
             if (new_player == "x"):
                 break
-            self.players.append(new_player)
+            elif (new_player in self.players):
+                print ("Player is already on list.")
+            else:
+                self.players.append(new_player)
         update_config(self.__dict__)
 
     #change server ip to be checked
@@ -181,6 +208,16 @@ def refresh_log():
         log_file.write("")
         log_file.close()
 
+def toggle_alt_checker():
+    global use_alt_checker
+    if (use_alt_checker):
+        use_alt_checker = False
+        print ("Alt Website checker turned off")
+    else:
+        use_alt_checker = True
+        print ("Alt Website checker turned on")
+    return
+
 #turn off and on logger module.
 def toggle_logger():
     global logger_is_on
@@ -238,6 +275,16 @@ def get_online_list(server):
             player_list.append(player)
         online_list = list(map(get_innerHTML, player_list))
         return online_list
+
+def get_online_list_alt(server):
+    try:
+        new_request = get(link)
+    except Exception:
+        print (f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
+        return False
+    else:
+        html_doc = BeautifulSoup(new_request.text, "html.parser")
+        player_elements = html_doc.find_all("a", class_"c-black")
 
 #quick command function that displays to users all online players in config servers
 def check_online_list():
@@ -388,6 +435,7 @@ def main():
                     "config": config.print_values,
                     "logger": toggle_logger,
                     "logall": toggle_all_players,
+                    "alt": toggle_alt_checker,
                     "newlog": refresh_log,
                     "fresh": config.start_new,
                     "start": start,
@@ -417,6 +465,7 @@ if __name__ == '__main__':
     global target_reached
     global logger_is_on
     global log_all_players
+    global use_alt_checker
     config = Config()
     config.load_config()
     config.print_values()
@@ -425,6 +474,7 @@ if __name__ == '__main__':
     target_reached = dict()
     logger_is_on = False
     log_all_players = False
+    use_alt_checker = False
     for each_server in config.servers:
         currently_online_list[each_server] = []
         interval_dict[each_server] = 0
