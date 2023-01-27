@@ -350,16 +350,19 @@ def logout_check(online_list, server):
 # quick command function that displays to users all online players in config servers
 def quick_check():
     global use_alt_checker
-    for each_server in config.servers:
-        online_list = get_online_list(each_server)
+    for index in range(len(config.servers)):
+        if (use_alt_checker):
+            online_list = get_online_list_alt(config.alt_links[index])
+        else:
+            online_list = get_online_list(config.servers[index])
         if (online_list == None):
             return
         elif (len(online_list) == 0):
-            print(f"0 players found on Server: {each_server}")
+            print(f"0 players found on Server: {config.servers[index]}")
         else:
             for each_player in online_list:
                 print(
-                    f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server}")
+                    f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged
@@ -380,6 +383,7 @@ def checker():
             log_list.extend(login_check(online_list, config.servers[index]))
         log_list.extend(logout_check(online_list, config.servers[index]))
         target_check(len(online_list), config.servers[index])
+        sleep(2)
     return log_list
 
 #Halts program for configured time before making another request
