@@ -246,7 +246,6 @@ def toggle_all_players():
         print ("Log All Players On.")
     return
 
-
 #update time interval between each refresh (not in use, troubleshoot)
 # def refresh_interval(string, server):
 #     global interval_dict
@@ -276,7 +275,8 @@ def get_online_list(server):
         online_list = list(map(get_innerHTML, player_list))
         return online_list
 
-def get_online_list_alt(server):
+#get online list from different website if minecraftlist.net is out of service
+def get_online_list_alt(link):
     try:
         new_request = get(link)
     except Exception:
@@ -284,20 +284,9 @@ def get_online_list_alt(server):
         return False
     else:
         html_doc = BeautifulSoup(new_request.text, "html.parser")
-        player_elements = html_doc.find_all("a", class_"c-black")
-
-#quick command function that displays to users all online players in config servers
-def check_online_list():
-    for each_server in config.servers:
-        online_list = get_online_list(each_server)
-        if (online_list == None):
-            return
-        elif (len(online_list) == 0):
-            print (f"0 players found on Server: {each_server}")
-        else:
-            for each_player in online_list:
-                print(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server}")
-    play_sound(str("chime.wav"))
+        player_elements = html_doc.find_all("a", class_="c-black")
+        player_elements = list(map(get_innerHTML, player_elements))
+        return player_elements
 
 #play notification sound
 def play_sound(sound_file):
@@ -359,20 +348,39 @@ def logout_check(online_list, server):
                 play_sound("logout.wav")
     return logout_list
 
+# quick command function that displays to users all online players in config servers
+def quick_check():
+    global use_alt_checker
+    for each_server in config.servers:
+        online_list = get_online_list(each_server)
+        if (online_list == None):
+            return
+        elif (len(online_list) == 0):
+            print(f"0 players found on Server: {each_server}")
+        else:
+            for each_player in online_list:
+                print(
+                    f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server}")
+    play_sound(str("chime.wav"))
+
 #checks for newly joined players and players who have logged
 def checker():
     global log_all_players
+    global use_alt_checker
     log_list = []
-    for server in config.servers:
-        online_list = get_online_list(server)
+    for index in range (len(config.servers)):
+        if (use_alt_checker):
+            online_list = get_online_list_alt(config.alt_links[index])
+        else:
+            online_list = get_online_list(config.servers[index])
         if (online_list == False):
             return []
         if (log_all_players):
-            log_list.extend(login_check_all(online_list, server))
+            log_list.extend(login_check_all(online_list, config.servers[index]))
         else:
-            log_list.extend(login_check(online_list, server))
-        log_list.extend(logout_check(online_list, server))
-        target_check(len(online_list), server)
+            log_list.extend(login_check(online_list, config.servers[index]))
+        log_list.extend(logout_check(online_list, config.servers[index]))
+        target_check(len(online_list), config.servers[index])
     return log_list
 
 #Halts program for configured time before making another request
@@ -430,12 +438,14 @@ def main():
                     "delplayer": config.delete_player,
                     "addserver": config.add_server,
                     "delserver": config.delete_server,
-                    "online": check_online_list,
+                    "online": quick_check,
                     "target": config.change_target,
                     "config": config.print_values,
                     "logger": toggle_logger,
                     "logall": toggle_all_players,
                     "alt": toggle_alt_checker,
+                    "addalt": config.add_alt_links,
+                    "delalt": config.del_alt_links,
                     "newlog": refresh_log,
                     "fresh": config.start_new,
                     "start": start,
