@@ -119,9 +119,8 @@ class Config:
             new_server = input("Enter Server IP (enter 'x' when finished):   ")
             if (new_server == "x"):
                 break
-            if (server_is_valid(new_server)):
-                self.servers.append(new_server)
-                update_config(self.__dict__)
+            self.servers.append(new_server)
+        update_config(self.__dict__)
 
     #delete specified player from checking list in config
     def delete_server(self):
@@ -279,12 +278,12 @@ def get_online_list(server):
 def get_online_list_alt(link):
     try:
         new_request = get(link)
+        html_doc = BeautifulSoup(new_request.text, "html.parser")
+        player_elements = html_doc.find_all("a", class_="c-black")
     except Exception:
         print (f"Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}")
         return False
     else:
-        html_doc = BeautifulSoup(new_request.text, "html.parser")
-        player_elements = html_doc.find_all("a", class_="c-black")
         player_elements = list(map(get_innerHTML, player_elements))
         return player_elements
 
