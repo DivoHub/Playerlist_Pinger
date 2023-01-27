@@ -211,10 +211,10 @@ def toggle_alt_checker():
     global use_alt_checker
     if (use_alt_checker):
         use_alt_checker = False
-        print ("\u001b[47m \u001b[31;1m Alt Website checker turned off") #white background, red text
+        print ("\u001b[40m \u001b[31;1m Alt Website checker turned off") #black background, red text
     else:
         use_alt_checker = True
-        print ("\u001b[47m \u001b[32;1m Alt Website checker turned on") #white background, green text
+        print ("\u001b[40m \u001b[32;1m Alt Website checker turned on") #black background, green text
     return
 
 #turn off and on logger module.
@@ -222,10 +222,10 @@ def toggle_logger():
     global logger_is_on
     if (logger_is_on):
         logger_is_on = False
-        print ("\u001b[47m \u001b[31;1m Logger turned off.") #white background, red text
+        print ("\u001b[40m \u001b[31;1m Logger turned off.") #black background, red text
     else:
         logger_is_on = True
-        print ("\u001b[47m \u001b[32;1m logger turned on") #white background, green text
+        print ("\u001b[40m \u001b[32;1m logger turned on") #black background, green text
     return
 
 def currently_online_flush():
@@ -239,10 +239,10 @@ def toggle_all_players():
     if (log_all_players):
         log_all_players = False
         currently_online_flush()
-        print ("\u001b[47m \u001b[31;1m Log All Players Off.") #white background, red text
+        print ("\u001b[40m \u001b[31;1m Log All Players Off.") #black background, red text
     else:
         log_all_players = True
-        print ("\u001b[47m \u001b[32;1m Log All Players On.") #white background, green text
+        print ("\u001b[40m \u001b[32;1m Log All Players On.") #black background, green text
     return
 
 #update time interval between each refresh (not in use, troubleshoot)
@@ -369,6 +369,7 @@ def quick_check():
                     print(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")  #default background, green text
                 else:
                     print(f"\u001b[0m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}") #default text colour
+        sleep(3)
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged
@@ -423,7 +424,7 @@ def start():
     if not(server_is_valid()):
         print ("\u001b[41m \u001b[30m Invalid server error...\n check configurations or connection, and try again") #Red background, black text
         return
-    print ("\u001b[47m \u001b[32;1m Starting checker \n")  #white background, green text
+    print ("\u001b[40m \u001b[32;1m Starting checker \n")  #black background, green text
     global continue_condition
     continue_condition = True
     process = Thread(target=looper)
@@ -434,7 +435,7 @@ def stop():
     if (active_count() == 1):
         print ("\u001b[0m Checker not running.\n") #default all
         return
-    print ("\u001b[47m \u001b[31;1m Stopping checker.\n") #white background, red text
+    print ("\u001b[40m \u001b[31;1m Stopping checker.\n") #black background, red text
     global continue_condition
     global currently_online_list
     continue_condition = False
@@ -462,9 +463,9 @@ def main():
                     "help": print_manual}
 
     while True:
-        print ("-------------------------")
-        user_input = input()
-        print ("-------------------------")
+        print ("\u001b[0m -------------------------")
+        user_input = input("\u001b[0m ")
+        print ("\u001b[0m -------------------------")
         if (user_input in command_dict.keys()):
             command_dict[user_input]()
         elif (user_input == "exit"):
@@ -477,7 +478,7 @@ def main():
             print ("\u001b[0m Unknown command.")
 
 if __name__ == '__main__':
-    print("\u001b[32;1m Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n-------------------------------------------")
+    print("\u001b[32;1m Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- \u001b[0m") #default background, green text
     global continue_condition
     global currently_online_list
     global interval_dict
