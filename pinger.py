@@ -24,7 +24,7 @@ class Config:
 
     #reinitialize all values for config file
     def start_new(self):
-        warning = input("\u001b[43;1m \u001b[30;1m This will erase your previous config file, are you sure? 'y' to continue.") #Yellow background, black text
+        warning = input("\u001b[43;1m \u001b[30;1m This will erase your previous config file, are you sure? 'y' to continue. \u001b[0m") #Yellow background, black text
         if not (warning == 'y'):
             return
         self.players = []
@@ -59,8 +59,8 @@ class Config:
             elif (del_player in self.players):
                 self.players.remove(del_player)
             else:
-                print ("\u001b[41m \u001b[30m Player is not found in config") #Red background, black text
-        update_config(self.__dict__)
+                print ("\u001b[41m \u001b[30m Player is not found in config \u001b[0m") #Red background, black text
+            update_config(self.__dict__)
 
     def add_alt_links(self):
         while True:
@@ -68,21 +68,21 @@ class Config:
             if (new_link == "x"):
                 break
             elif (new_link in self.alt_links):
-                print("\u001b[41m \u001b[30m Alt link is already on list.") #Red background, black text
+                print("\u001b[41m \u001b[30m Alt link is already on list. \u001b[0m") #Red background, black text
             else:
                 self.alt_links.append(new_link)
-        update_config(self.__dict__)
+            update_config(self.__dict__)
 
     def del_alt_links(self):
         while True:
-            del_link = input("\u001b[0m Enter alt link to be removed. enter 'x' when finished:    ") #Red background, black text
+            del_link = input("\u001b[0m Enter alt link to be removed. enter 'x' when finished:    \u001b[0m") #Red background, black text
             if (del_link == "x"):
                 break
             elif (del_link in self.alt_links):
                 self.alt_links.remove(del_link)
             else:
-                print ("\u001b[41m \u001b[30m Alt link not found in config.") #Red background, black text
-        update_config(self.__dict__)
+                print ("\u001b[41m \u001b[30m Alt link not found in config. \u001b[0m") #Red background, black text
+            update_config(self.__dict__)
 
     #prints config values to console
     def print_values(self):
@@ -97,7 +97,7 @@ class Config:
         try:
             self.target = int(input("\u001b[0m Enter target size to ping user for:  ")) #default all
         except ValueError:
-            print ("\u001b[41m \u001b[30m Invalid input given.") #Red background, black text
+            print ("\u001b[41m \u001b[30m Invalid input given. \u001b[0m") #Red background, black text
         else:
             update_config(self.__dict__)
 
@@ -108,10 +108,10 @@ class Config:
             if (new_player == "x"):
                 break
             elif (new_player in self.players):
-                print ("\u001b[41m \u001b[30m Player is already on list.") #Red background, black text
+                print ("\u001b[41m \u001b[30m Player is already on list. \u001b[0m") #Red background, black text
             else:
                 self.players.append(new_player)
-        update_config(self.__dict__)
+            update_config(self.__dict__)
 
     #change server ip to be checked
     def add_server(self):
@@ -120,7 +120,7 @@ class Config:
             if (new_server == "x"):
                 break
             self.servers.append(new_server)
-        update_config(self.__dict__)
+            update_config(self.__dict__)
 
     #delete specified player from checking list in config
     def delete_server(self):
@@ -131,8 +131,8 @@ class Config:
             if (del_server in self.servers):
                 self.servers.remove(del_server)
             else:
-                print ("\u001b[41m \u001b[30m Server is not in list") #Red background, black text
-        update_config(self.__dict__)
+                print ("\u001b[41m \u001b[30m Server is not in list \u001b[0m") #Red background, black text
+            update_config(self.__dict__)
 
     #change interval between each GET request
     def change_interval(self):
@@ -141,7 +141,7 @@ class Config:
                 self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   ")) #default all
                 if (self.interval < 30): raise ValueError
             except ValueError:
-                print ("\u001b[41m \u001b[30m Input Error") #Red background, black text
+                print ("\u001b[41m \u001b[30m Input Error \u001b[0m") #Red background, black text
             else:
                 break
 
@@ -172,17 +172,17 @@ def get_innerHTML(element):
 def server_is_valid():
     for server in config.servers:
         if (server == "" or len(config.servers) == 0):
-            print ("\u001b[41m \u001b[30m No Server IP given") #Red background, black text
+            print ("\u001b[41m \u001b[30m No Server IP given \u001b[0m") #Red background, black text
             return False
         try:
             status_code = get("https://minecraftlist.com/servers/" + server).status_code
             if (status_code >= 200 and status_code <= 299):
                 return True
             elif (status_code == 404):
-                print("\u001b[41m \u001b[30m Invalid Server entered.") #Red background, black text
+                print("\u001b[41m \u001b[30m Invalid Server entered. \u001b[0m") #Red background, black text
                 return False
             else:
-                print("\u001b[41m \u001b[30m Connection error") #Red background, black text
+                print("\u001b[41m \u001b[30m Connection error \u001b[0m") #Red background, black text
                 return False
         except Exception:
             return False
@@ -211,10 +211,10 @@ def toggle_alt_checker():
     global use_alt_checker
     if (use_alt_checker):
         use_alt_checker = False
-        print ("\u001b[40m \u001b[31;1m Alt Website checker turned off") #black background, red text
+        print ("\u001b[40m \u001b[31;1m Alt Website checker turned off \u001b[0m") #black background, red text
     else:
         use_alt_checker = True
-        print ("\u001b[40m \u001b[32;1m Alt Website checker turned on") #black background, green text
+        print ("\u001b[40m \u001b[32;1m Alt Website checker turned on \u001b[0m") #black background, green text
     return
 
 #turn off and on logger module.
@@ -222,10 +222,10 @@ def toggle_logger():
     global logger_is_on
     if (logger_is_on):
         logger_is_on = False
-        print ("\u001b[40m \u001b[31;1m Logger turned off.") #black background, red text
+        print ("\u001b[40m \u001b[31;1m Logger turned off. \u001b[0m") #black background, red text
     else:
         logger_is_on = True
-        print ("\u001b[40m \u001b[32;1m logger turned on") #black background, green text
+        print ("\u001b[40m \u001b[32;1m logger turned on \u001b[0m") #black background, green text
     return
 
 def currently_online_flush():
