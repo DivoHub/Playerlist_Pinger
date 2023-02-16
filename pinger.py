@@ -6,14 +6,18 @@ from datetime import datetime
 from json import dumps, load
 from time import sleep
 
+class Server:
+    def __init__(self):
+        self.url = ""
+        self.target = 0
+        self.alt_link = None
+
 #Main configuration class
 class Config:
     def __init__(self):
         self.players = []
         self.servers = []
-        self.target = 0
         self.interval = 60
-        self.alt_links = []
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -38,10 +42,10 @@ class Config:
         try:
             playerlist_file = open('config.json', 'r')
         except FileNotFoundError:
-            print ("\u001b[41m \u001b[30m No config.json file found.") #Red background, black text
+            print ("\u001b[41m \u001b[30m No config.json file found. \u001b[0m") #Red background, black text
             self.initialize()
         except Exception:
-            print ("\u001b[41m \u001b[30m Other error occurred.") #Red background, black text
+            print ("\u001b[41m \u001b[30m Other error occurred. \u001b[0m") #Red background, black text
         else:
             json_file = load(playerlist_file)
             self.players = json_file["players"]
@@ -53,7 +57,7 @@ class Config:
     #remove specified player from checking list in config
     def delete_player(self):
         while True:
-            del_player = input("\u001b[0m Enter player name (case sensitive) enter 'x' when finished:    ") #default all
+            del_player = input("\u001b[0m Enter player name (case sensitive) enter 'x' when finished:    \u001b[0m") #default all
             if (del_player == "x"):
                 break
             elif (del_player in self.players):
@@ -65,6 +69,7 @@ class Config:
     def add_alt_links(self):
         while True:
             new_link = input("\u001b[0m Enter alt link for server on minecraft-statistic.net. enter 'x' when finished:    ") #default all
+            server = input("\u001b[0m Enter alt link for server on minecraft-statistic.net. enter 'x' when finished:    ")
             if (new_link == "x"):
                 break
             elif (new_link in self.alt_links):
@@ -94,8 +99,10 @@ class Config:
 
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
+        server = input("Enter server to change interval for:   \u001b[0m")
+        if
         try:
-            self.target = int(input("\u001b[0m Enter target size to ping user for:  ")) #default all
+            self.target = int(input("\u001b[0m Enter target size to ping user for:  \u001b[0m")) #default all
         except ValueError:
             print ("\u001b[41m \u001b[30m Invalid input given. \u001b[0m") #Red background, black text
         else:
@@ -104,7 +111,7 @@ class Config:
     #append new players to players list
     def add_player(self):
         while True:
-            new_player = input("\u001b[0m Enter player name (enter 'x' when finished):    ") #default all
+            new_player = input("\u001b[0m Enter player name (enter 'x' when finished):    \u001b[0m") #default all
             if (new_player == "x"):
                 break
             elif (new_player in self.players):
@@ -116,7 +123,7 @@ class Config:
     #change server ip to be checked
     def add_server(self):
         while True:
-            new_server = input("\u001b[0m Enter Server IP (enter 'x' when finished):   ") #default all
+            new_server = input("\u001b[0m Enter Server IP (enter 'x' when finished):   \u001b[0m") #default all
             if (new_server == "x"):
                 break
             self.servers.append(new_server)
@@ -125,7 +132,7 @@ class Config:
     #delete specified player from checking list in config
     def delete_server(self):
         while True:
-            del_server = input("\u001b[0m Enter server name (case sensitive) enter 'x' when finished:    ") #default all
+            del_server = input("\u001b[0m Enter server name (case sensitive) enter 'x' when finished:    \u001b[0m") #default all
             if (del_server == "x"):
                 break
             if (del_server in self.servers):
@@ -138,7 +145,7 @@ class Config:
     def change_interval(self):
         while True:
             try:
-                self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   ")) #default all
+                self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   \u001b[0m")) #default all
                 if (self.interval < 30): raise ValueError
             except ValueError:
                 print ("\u001b[41m \u001b[30m Input Error \u001b[0m") #Red background, black text
@@ -239,10 +246,10 @@ def toggle_all_players():
     if (log_all_players):
         log_all_players = False
         currently_online_flush()
-        print ("\u001b[40m \u001b[31;1m Log All Players Off.") #black background, red text
+        print ("\u001b[40m \u001b[31;1m Log All Players Off. \u001b[0m") #black background, red text
     else:
         log_all_players = True
-        print ("\u001b[40m \u001b[32;1m Log All Players On.") #black background, green text
+        print ("\u001b[40m \u001b[32;1m Log All Players On. \u001b[0m") #black background, green text
     return
 
 #update time interval between each refresh (not in use, troubleshoot)
@@ -261,7 +268,7 @@ def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
-        print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}") #Red background, black text
+        print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #Red background, black text
         return False
     else:
         html_doc = BeautifulSoup(new_request.text, "html.parser")
@@ -281,7 +288,7 @@ def get_online_list_alt(link):
         html_doc = BeautifulSoup(new_request.text, "html.parser")
         player_elements = html_doc.find_all("a", class_="c-black")
     except Exception:
-        print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')}") #Red background, black text
+        print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #Red background, black text
         return False
     else:
         player_elements = list(map(get_innerHTML, player_elements))
@@ -295,9 +302,9 @@ def play_sound(sound_file):
             play.wait_done()
             play.stop()
         except FileNotFoundError:
-            print(f"\u001b[41m \u001b[30m {sound_file} file not found.") #Red background, black text
+            print(f"\u001b[41m \u001b[30m {sound_file} file not found. \u001b[0m") #Red background, black text
         except Exception:
-            print ("\u001b[41m \u001b[30m Error with playing notification audio.") #Red background, black text
+            print ("\u001b[41m \u001b[30m Error with playing notification audio. \u001b[0m") #Red background, black text
         finally:
             return
 
@@ -306,7 +313,7 @@ def target_check(player_count, server):
     global target_reached
     if (player_count >= config.target and target_reached[server] is False):
         target_reached[server] = True
-        print(f"\u001b[0m \u001b[34;1m {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')}") #default background, blue text
+        print(f"\u001b[0m \u001b[34;1m {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #default background, blue text
         play_sound("chime.wav")
     elif (player_count < config.target and target_reached[server] is True):
         target_reached[server] = False
@@ -320,9 +327,9 @@ def login_check_all(online_list, server):
             currently_online_list[server].append(each_player)
             if (each_player in config.players):
                 play_sound("login.wav")
-                login_list.append(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default background, green text
+                login_list.append(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} \u001b[0m") #default background, green text
             else:
-                login_list.append(f"\u001b[0m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default all
+                login_list.append(f"\u001b[0m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} \u001b[0m") #default all
     return login_list
 
 #log players in config who log on to server
@@ -332,7 +339,7 @@ def login_check(online_list, server):
     login_list = []
     for each_player in found_list:
         if (each_player not in currently_online_list[server]):
-            login_list.append(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default background, green text
+            login_list.append(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} \u001b[0m") #default background, green text
             currently_online_list[server].append(each_player)
             play_sound("login.wav")
     return login_list
@@ -346,9 +353,9 @@ def logout_check(online_list, server):
             currently_online_list[server].remove(each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                logout_list.append(f"\u001b[0m \u001b[31;1m > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default background, red text
+                logout_list.append(f"\u001b[0m \u001b[31;1m > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} \u001b[0m") #default background, red text
             else:
-                logout_list.append(f"\u001b[0m > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default all
+                logout_list.append(f"\u001b[0m > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} \u001b[0m") #default all
     return logout_list
 
 # quick command function that displays to users all online players in config servers
@@ -362,13 +369,13 @@ def quick_check():
         if (online_list == None):
             return
         elif (len(online_list) == 0):
-            print(f"\u001b[0m \u001b[34;1m 0 players found on Server: {config.servers[index]}") #default background, blue text
+            print(f"\u001b[0m \u001b[34;1m 0 players found on Server: {config.servers[index]} \u001b[0m") #default background, blue text
         else:
             for each_player in online_list:
                 if (each_player in config.players):
-                    print(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")  #default background, green text
+                    print(f"\u001b[0m \u001b[32;1m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]} \u001b[0m")  #default background, green text
                 else:
-                    print(f"\u001b[0m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}") #default text colour
+                    print(f"\u001b[0m > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]} \u001b[0m") #default text colour
         sleep(3)
     play_sound(str("chime.wav"))
 
@@ -419,12 +426,12 @@ def looper():
 #start application
 def start():
     if (active_count() > 1):
-        print("\u001b[0m Checker already running. \n") #default all
+        print("\u001b[0m Checker already running. \n \u001b[0m") #default all
         return
     if not(server_is_valid()):
-        print ("\u001b[41m \u001b[30m Invalid server error...\n check configurations or connection, and try again") #Red background, black text
+        print ("\u001b[41m \u001b[30m Invalid server error...\n check configurations or connection, and try again \u001b[0m") #Red background, black text
         return
-    print ("\u001b[40m \u001b[32;1m Starting checker \n")  #black background, green text
+    print ("\u001b[40m \u001b[32;1m Starting checker \n \u001b[0m")  #black background, green text
     global continue_condition
     continue_condition = True
     process = Thread(target=looper)
@@ -433,9 +440,9 @@ def start():
 #stop application
 def stop():
     if (active_count() == 1):
-        print ("\u001b[0m Checker not running.\n") #default all
+        print ("\u001b[0m Checker not running.\n \u001b[0m") #default all
         return
-    print ("\u001b[40m \u001b[31;1m Stopping checker.\n") #black background, red text
+    print ("\u001b[40m \u001b[31;1m Stopping checker.\n \u001b[0m") #black background, red text
     global continue_condition
     global currently_online_list
     continue_condition = False
@@ -476,6 +483,9 @@ def main():
             print ("")
         else:
             print ("\u001b[0m Unknown command.")
+
+
+
 
 if __name__ == '__main__':
     print("\u001b[32;1m Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- \u001b[0m") #default background, green text
