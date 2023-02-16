@@ -17,7 +17,7 @@ class Config:
     def __init__(self):
         self.players = []
         self.servers = []
-        self.interval = 60
+        self.interval = 120
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -33,7 +33,6 @@ class Config:
             return
         self.players = []
         self.servers = []
-        self.target = 0
         self.add_player()
         self.add_server()
 
@@ -50,8 +49,6 @@ class Config:
             json_file = load(playerlist_file)
             self.players = json_file["players"]
             self.servers = json_file["servers"]
-            self.target = json_file["target"]
-            self.alt_links = json_file["alt_links"]
             playerlist_file.close()
 
     #remove specified player from checking list in config
@@ -66,48 +63,6 @@ class Config:
                 print ("\u001b[41m \u001b[30m Player is not found in config \u001b[0m") #Red background, black text
             update_config(self.__dict__)
 
-    def add_alt_links(self):
-        while True:
-            new_link = input("\u001b[0m Enter alt link for server on minecraft-statistic.net. enter 'x' when finished:    ") #default all
-            server = input("\u001b[0m Enter alt link for server on minecraft-statistic.net. enter 'x' when finished:    ")
-            if (new_link == "x"):
-                break
-            elif (new_link in self.alt_links):
-                print("\u001b[41m \u001b[30m Alt link is already on list. \u001b[0m") #Red background, black text
-            else:
-                self.alt_links.append(new_link)
-            update_config(self.__dict__)
-
-    def del_alt_links(self):
-        while True:
-            del_link = input("\u001b[0m Enter alt link to be removed. enter 'x' when finished:    \u001b[0m") #Red background, black text
-            if (del_link == "x"):
-                break
-            elif (del_link in self.alt_links):
-                self.alt_links.remove(del_link)
-            else:
-                print ("\u001b[41m \u001b[30m Alt link not found in config. \u001b[0m") #Red background, black text
-            update_config(self.__dict__)
-
-    #prints config values to console
-    def print_values(self):
-        print (f"Number of Servers checking:  {len(self.servers)}")
-        print (f"Checking on Server IP: {self.servers} \n")
-        print(f"Number of Players checking: {len(self.players)}")
-        print (f"Checking for players: {self.players} \n")
-        print(f"Ping when server size reaches: {self.target} \n")
-
-    #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
-    def change_target(self):
-        server = input("Enter server to change interval for:   \u001b[0m")
-        if
-        try:
-            self.target = int(input("\u001b[0m Enter target size to ping user for:  \u001b[0m")) #default all
-        except ValueError:
-            print ("\u001b[41m \u001b[30m Invalid input given. \u001b[0m") #Red background, black text
-        else:
-            update_config(self.__dict__)
-
     #append new players to players list
     def add_player(self):
         while True:
@@ -118,6 +73,62 @@ class Config:
                 print ("\u001b[41m \u001b[30m Player is already on list. \u001b[0m") #Red background, black text
             else:
                 self.players.append(new_player)
+            update_config(self.__dict__)
+
+    #prints all servers and corresponding indexes
+    def server_index_printer(self):
+        print("--------------------------------")
+        for index in range(len(self.servers)):
+            print(f"{index}: {self.servers[index]['url']} \n")
+        print("--------------------------------")
+
+    #if main web scrape is not working, use alt_link of each server
+    def add_alt_links(self):
+        self.server_index_printer()
+        try:
+            server_index = int(input("\u001b[0m Enter index (number) of server to add/change alt link to:     ")) #default all
+            new_alt_link = input("\u001b[0m Enter alt link for server on minecraft-statistic.net: ") #default all
+            self.servers[server_index]['alt_link'] = new_alt_link
+        except ValueError:
+            print("\u001b[41m \u001b[30m Invalid Input Given. \u001b[0m")  # Red background, black text
+        except IndexError:
+            print("\u001b[41m \u001b[30m Index does not match a given server. \u001b[0m") # Red background, black text
+        else:
+            update_config(self.__dict__)
+
+    #delete alt link for given server index
+    def del_alt_links(self):
+        self.server_index_printer()
+        try:
+            deletion_index = int(input("\u001b[0m Enter index (number) of server to delete alt link to:    "))
+            if self.servers[deletion_index]['alt_link'] is None: raise KeyError
+            self.servers[deletion_index]['alt_link'] = None
+        except ValueError:
+            print("\u001b[41m \u001b[30m Invalid Input Given. \u001b[0m")  # Red background, black text
+        except IndexError:
+            print("\u001b[41m \u001b[30m Index does not match a given server. \u001b[0m")  # Red background, black text
+        except KeyError:
+            print("\u001b[41m \u001b[30m Server does not have an alt link to delete. \u001b[0m") # Red background, black text
+        else:
+            update_config(self.__dict__)
+
+    #prints config values to console
+    def print_values(self):
+        print (f"Number of Servers checking:  {len(self.servers)}")
+        print (f"Checking on Server IP: {self.servers} \n")            #LAST HERE
+        print(f"Number of Players checking: {len(self.players)}")
+        print (f"Checking for players: {self.players} \n")
+        print(f"Ping when server size reaches: {self.target} \n")
+
+    #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
+    def change_target(self):
+        self.server_index_printer()
+        try:
+            server_index = int(input("\u001b[0m Enter index (number) of server to change target for:    "))
+            self.servers[server_index]['target'] = int(input(f"\u001b[0m Enter number target for {self.servers[server_index['url']]}:    "))
+        except ValueError:
+            print("\u001b[41m \u001b[30m Invalid input given. \u001b[0m") #Red background, black text
+        else:
             update_config(self.__dict__)
 
     #change server ip to be checked
@@ -151,6 +162,8 @@ class Config:
                 print ("\u001b[41m \u001b[30m Input Error \u001b[0m") #Red background, black text
             else:
                 break
+
+
 
 #Prints help manual to console
 def print_manual():
