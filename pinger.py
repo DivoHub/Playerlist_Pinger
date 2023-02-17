@@ -115,7 +115,7 @@ class Config:
     #prints config values to console
     def print_values(self):
         print (f"Number of Servers checking:  {len(self.servers)}")
-        print (f"Checking on Server IP: {self.servers} \n")            #LAST HERE
+        print (f"Checking on Server IP: {self.servers} \n")
         print(f"Number of Players checking: {len(self.players)}")
         print (f"Checking for players: {self.players} \n")
         print(f"Ping when server size reaches: {self.target} \n")
@@ -134,9 +134,12 @@ class Config:
     #change server ip to be checked
     def add_server(self):
         while True:
-            new_server = input("\u001b[0m Enter Server IP (enter 'x' when finished):   \u001b[0m") #default all
+            new_server = Server()
+            new_server['url'] = input("\u001b[0m Enter Server IP (enter 'x' when finished):   \u001b[0m") #default all
             if (new_server == "x"):
                 break
+            if (input("\u001b[0m  Add an alt link? 'y' if yes. ") == "y"):
+
             self.servers.append(new_server)
             update_config(self.__dict__)
 
@@ -154,7 +157,6 @@ class Config:
 
     #change interval between each GET request
     def change_interval(self):
-        while True:
             try:
                 self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   \u001b[0m")) #default all
                 if (self.interval < 30): raise ValueError
@@ -162,8 +164,6 @@ class Config:
                 print ("\u001b[41m \u001b[30m Input Error \u001b[0m") #Red background, black text
             else:
                 break
-
-
 
 #Prints help manual to console
 def print_manual():
