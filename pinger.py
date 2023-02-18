@@ -134,15 +134,17 @@ class Config:
 
     #change server ip to be checked
     def add_server(self):
-        while True:
-            new_server = Server()
-            new_server['url'] = input("\u001b[0m Enter Server IP (enter 'x' when finished):   \u001b[0m") #default all
-            if (new_server == "x"):
-                break
-            if (input("\u001b[0m  Add an alt link? 'y' if yes. ") == "y"):
-
-            self.servers.append(new_server)
-            update_config(self.__dict__)
+        new_server = Server()
+        user_input = input("\u001b[0m Enter Server IP (enter 'x' to cancel):   \u001b[0m") #default all
+        if (user_input == 'x'):
+            return
+        new_server.url = user_input
+        user_input = input("\u001b[0m  Add an alt link? 'y' if yes.   "):
+        if (user_input != "y".casefold()):
+            return
+        new_server.alt_link = input("\u001b[0m Enter alt link for server:   \u001b[0m")
+        self.servers.append(new_server.__dict__)
+        update_config(self.__dict__)
 
     #delete specified player from checking list in config
     def delete_server(self):
@@ -163,12 +165,9 @@ class Config:
     #change interval between each GET request
     def change_interval(self):
             try:
-                self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (must be at least 30 with no decimals:   \u001b[0m")) #default all
-                if (self.interval < 30): raise ValueError
+                self.interval = int(input("\u001b[0m Enter an interval in seconds between each fetch (Anything over 30 is ill-advised)   \u001b[0m")) #default all
             except ValueError:
                 print ("\u001b[41m \u001b[30m Input Error \u001b[0m") #Red background, black text
-            else:
-                break
 
 #Prints help manual to console
 def print_manual():
@@ -194,22 +193,19 @@ def get_innerHTML(element):
     return element.string
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
-def server_is_valid():
-    for server in config.servers:
-        if (server == "" or len(config.servers) == 0):
+def servers_are_valid():
+    for each_server in config.servers:
+        if (len(each_server['url']) == 0):
             print ("\u001b[41m \u001b[30m No Server IP given \u001b[0m") #Red background, black text
             return False
-        try:
-            status_code = get("https://minecraftlist.com/servers/" + server).status_code
-            if (status_code >= 200 and status_code <= 299):
-                return True
-            elif (status_code == 404):
-                print("\u001b[41m \u001b[30m Invalid Server entered. \u001b[0m") #Red background, black text
-                return False
-            else:
-                print("\u001b[41m \u001b[30m Connection error \u001b[0m") #Red background, black text
-                return False
-        except Exception:
+        status_code = get("https://minecraftlist.com/servers/" + each_server).status_code
+        if (status_code >= 200 and status_code <= 299):
+            return True
+        elif (status_code == 404):
+            print("\u001b[41m \u001b[30m Invalid Server entered. \u001b[0m") #Red background, black text
+            return False
+        else:
+            print("\u001b[41m \u001b[30m Connection error \u001b[0m") #Red background, black text
             return False
 
 #appends each status into log file in local folder. Creates log file if none exists
@@ -232,6 +228,12 @@ def refresh_log():
         log_file.write("")
         log_file.close()
 
+def currently_online_flush():
+    global currently_online_list
+    for each_server in config.servers:
+        currently_online_list[each_server] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
+    return
+
 def toggle_alt_checker():
     global use_alt_checker
     if (use_alt_checker):
@@ -251,12 +253,6 @@ def toggle_logger():
     else:
         logger_is_on = True
         print ("\u001b[40m \u001b[32;1m logger turned on \u001b[0m") #black background, green text
-    return
-
-def currently_online_flush():
-    global currently_online_list
-    for each_server in config.servers:
-        currently_online_list[each_server] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
     return
 
 def toggle_all_players():
@@ -289,8 +285,8 @@ def get_online_list(server):
         print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #Red background, black text
         return False
     else:
-        html_doc = BeautifulSoup(new_request.text, "html.parser")
-        player_elements = html_doc.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
+        new_request = BeautifulSoup(new_request.text, "html.parser")
+        player_elements = new_request.find_all("a", class_="block no-underline hover:bg-gray-200 px-2 py-1 flex items-center text-gray-800")
         #last_checked = html_doc.find("p", class_="text-center text-gray-500").text
         player_list = []
         for each_element in player_elements:
@@ -300,17 +296,17 @@ def get_online_list(server):
         return online_list
 
 #get online list from different website if minecraftlist.net is out of service
-def get_online_list_alt(link):
+def get_online_list_alt(alt_link):
     try:
-        new_request = get(link)
-        html_doc = BeautifulSoup(new_request.text, "html.parser")
-        player_elements = html_doc.find_all("a", class_="c-black")
+        new_request = get(alt_link)
+        new_request = BeautifulSoup(new_request.text, "html.parser")
+        player_list = new_request.find_all("a", class_="c-black")
     except Exception:
         print (f"\u001b[41m \u001b[30m Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #Red background, black text
         return False
     else:
-        player_elements = list(map(get_innerHTML, player_elements))
-        return player_elements
+        player_list = list(map(get_innerHTML, player_list))
+        return player_list
 
 #play notification sound
 def play_sound(sound_file):
@@ -446,7 +442,7 @@ def start():
     if (active_count() > 1):
         print("\u001b[0m Checker already running. \n \u001b[0m") #default all
         return
-    if not(server_is_valid()):
+    if not(servers_are_valid()):
         print ("\u001b[41m \u001b[30m Invalid server error...\n check configurations or connection, and try again \u001b[0m") #Red background, black text
         return
     print ("\u001b[40m \u001b[32;1m Starting checker \n \u001b[0m")  #black background, green text
