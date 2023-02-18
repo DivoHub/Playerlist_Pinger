@@ -115,10 +115,11 @@ class Config:
     #prints config values to console
     def print_values(self):
         print (f"Number of Servers checking:  {len(self.servers)}")
-        print (f"Checking on Server IP: {self.servers} \n")
         print(f"Number of Players checking: {len(self.players)}")
         print (f"Checking for players: {self.players} \n")
-        print(f"Ping when server size reaches: {self.target} \n")
+        for each_server in self.servers:
+            print (f"IP: {each_server['url']} ")
+            print (f"Target: {each_server['target']}" )
 
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
