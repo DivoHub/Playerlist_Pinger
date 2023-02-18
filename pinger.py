@@ -146,14 +146,18 @@ class Config:
 
     #delete specified player from checking list in config
     def delete_server(self):
-        while True:
-            del_server = input("\u001b[0m Enter server name (case sensitive) enter 'x' when finished:    \u001b[0m") #default all
-            if (del_server == "x"):
-                break
-            if (del_server in self.servers):
-                self.servers.remove(del_server)
-            else:
-                print ("\u001b[41m \u001b[30m Server is not in list \u001b[0m") #Red background, black text
+        self.server_index_printer()
+        deletion_index = input("\u001b[0m Enter index (number) of server to delete (enter 'x' to cancel):    ")
+        if (deletion_index== "x"):
+            return
+        try:
+            deletion_index = int(deletion_index)
+            self.servers.pop(deletion_index)
+        except ValueError:
+            print ("Invalid Entry.")
+        except IndexError:
+            print ("Input does not correspond to a server index.")
+        else:
             update_config(self.__dict__)
 
     #change interval between each GET request
