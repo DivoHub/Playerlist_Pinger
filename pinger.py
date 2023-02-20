@@ -38,7 +38,7 @@ class Config:
 
     #reinitialize all values for config file
     def start_new(self):
-        warning = input(" This will erase your previous config file, are you sure? 'y' to continue.") #Yellow background, black text
+        warning = input(f"{colour.warning}This will erase your previous config file, are you sure? 'y' to continue.{colour.default}")
         if not (warning == 'y'):
             return
         self.players = []
@@ -51,10 +51,10 @@ class Config:
         try:
             playerlist_file = open('config.json', 'r')
         except FileNotFoundError:
-            print (f"{colour.error} No config.json file found. ") #Red background, black text
+            print (f"{colour.error} No config.json file found. {colour.default}")
             self.initialize()
         except Exception:
-            print (f"{colour.error} Other error occurred. ") #Red background, black text
+            print (f"{colour.error} Other error occurred. {colour.default}")
         else:
             json_file = load(playerlist_file)
             self.players = json_file["players"]
@@ -64,23 +64,23 @@ class Config:
     #remove specified player from checking list in config
     def delete_player(self):
         while True:
-            del_player = input(f"{colour.default} Enter player name (case sensitive) enter 'x' when finished:    ") #default all
+            del_player = input(f"{colour.default} Enter player name (case sensitive) enter 'x' when finished:    ")
             if (del_player == "x"):
                 break
             elif (del_player in self.players):
                 self.players.remove(del_player)
             else:
-                print (f"{colour.error} Player is not found in config ") #Red background, black text
+                print (f"{colour.error} Player is not found in config {colour.default}")
             update_config(self.__dict__)
 
     #append new players to players list
     def add_player(self):
         while True:
-            new_player = input(f"{colour.default} Enter player name (enter 'x' when finished):    ") #default all
+            new_player = input(f"{colour.default} Enter player name (enter 'x' when finished):    ")
             if (new_player == "x"):
                 break
             elif (new_player in self.players):
-                print (f"{colour.error} Player is already on list. ") #Red background, black text
+                print (f"{colour.error} Player is already on list. {colour.default}")
             else:
                 self.players.append(new_player)
             update_config(self.__dict__)
@@ -96,13 +96,13 @@ class Config:
     def add_alt_links(self):
         self.server_index_printer()
         try:
-            server_index = int(input(f"{colour.default} Enter index (number) of server to add/change alt link to:     ")) #default all
-            new_alt_link = input(f"{colour.default} Enter alt link for server on minecraft-statistic.net: ") #default all
+            server_index = int(input(f"{colour.default} Enter index (number) of server to add/change alt link to:     "))
+            new_alt_link = input(f"{colour.default} Enter alt link for server on minecraft-statistic.net: ")
             self.servers[server_index]['alt_link'] = new_alt_link
         except ValueError:
-            print(f"{colour.error} Invalid Input Given.")  # Red background, black text
+            print(f"{colour.error} Invalid Input Given.{colour.default}")
         except IndexError:
-            print(f"{colour.error} Index does not match a given server.") # Red background, black text
+            print(f"{colour.error} Index does not match a given server.{colour.default}")
         else:
             update_config(self.__dict__)
 
@@ -110,15 +110,15 @@ class Config:
     def del_alt_links(self):
         self.server_index_printer()
         try:
-            deletion_index = int(input(f"{colour.default} Enter index (number) of server to delete alt link to:    "))
+            deletion_index = int(input(f"{colour.default} Enter index (number) of server to delete alt link to:    {colour.default}"))
             if self.servers[deletion_index]['alt_link'] is None: raise KeyError
             self.servers[deletion_index]['alt_link'] = None
         except ValueError:
-            print(f"{colour.error} Invalid Input Given. ")  # Red background, black text
+            print(f"{colour.error} Invalid Input Given. {colour.default}")
         except IndexError:
-            print(f"{colour.error} Index does not match a given server.")  # Red background, black text
+            print(f"{colour.error} Index does not match a given server.{colour.default}")
         except KeyError:
-            print(f"{colour.error} Server does not have an alt link to delete.") # Red background, black text
+            print(f"{colour.error} Server does not have an alt link to delete.{colour.default}")
         else:
             update_config(self.__dict__)
 
@@ -138,21 +138,21 @@ class Config:
             server_index = int(input(f"{colour.default} Enter index (number) of server to change target for:    "))
             self.servers[server_index]['target'] = int(input(f"{colour.default}Enter number target for {self.servers[server_index['url']]}:    "))
         except ValueError:
-            print(f"{colour.error} Invalid input given. {colour.error}") #Red background, black text
+            print(f"{colour.error} Invalid input given. {colour.error}{colour.default}")
         else:
             update_config(self.__dict__)
 
     #change server ip to be checked
     def add_server(self):
         new_server = Server()
-        user_input = input(f"{colour.default} Enter Server IP (enter 'x' to cancel):   ") #default all
+        user_input = input(f"{colour.default} Enter Server IP (enter 'x' to cancel):   ")
         if (user_input == 'x'):
             return
         new_server.url = user_input
         user_input = input(f"{colour.default}  Add an alt link? 'y' if yes.   ")
         if (user_input != "y".casefold()):
             return
-        new_server.alt_link = input(f"{colour.default} Enter alt link for server:  {colour.default}")
+        new_server.alt_link = input(f"{colour.default} Enter alt link for server:  ")
         self.servers.append(new_server.__dict__)
         update_config(self.__dict__)
 
@@ -166,9 +166,9 @@ class Config:
             deletion_index = int(deletion_index)
             self.servers.pop(deletion_index)
         except ValueError:
-            print (f"{colour.error}Invalid Entry.")
+            print (f"{colour.error}Invalid Entry.{colour.default}")
         except IndexError:
-            print (f"{colour.error}Input does not correspond to a server index.")
+            print (f"{colour.error}Input does not correspond to a server index.{colour.default}")
         else:
             update_config(self.__dict__)
 
@@ -177,7 +177,7 @@ class Config:
             try:
                 self.interval = int(input(f"{colour.default} Enter an interval in seconds between each fetch (Anything over 30 is ill-advised)")) #default all
             except ValueError:
-                print (f"{colour.error} Input Error ") #Red background, black text
+                print (f"{colour.error} Input Error {colour.default}")
 
 #Prints help manual to console
 def print_manual():
@@ -187,7 +187,7 @@ def print_manual():
 
 #create config.json file / no return variable
 def create_config():
-    print(f"{colour.default} Creating new config.json file.") #default all
+    print(f"{colour.default} Creating new config.json file.")
     new_file = open('config.json', 'x')
     new_file.close()
 
@@ -206,16 +206,16 @@ def get_innerHTML(element):
 def servers_are_valid():
     for each_server in config.servers:
         if (len(each_server['url']) == 0):
-            print (f"{colour.error} No Server IP given ") #Red background, black text
+            print (f"{colour.error} No Server IP given {colour.default}")
             return False
         status_code = get("https://minecraftlist.com/servers/" + each_server).status_code
         if (status_code >= 200 and status_code <= 299):
             return True
         elif (status_code == 404):
-            print(f"{colour.error} Invalid Server entered. ") #Red background, black text
+            print(f"{colour.error} Invalid Server entered. {colour.default}")
             return False
         else:
-            print(f"{colour.error} Connection error ") #Red background, black text
+            print(f"{colour.error} Connection error {colour.default}")
             return False
 
 #appends each status into log file in local folder. Creates log file if none exists
@@ -248,10 +248,10 @@ def toggle_alt_checker():
     global use_alt_checker
     if (use_alt_checker):
         use_alt_checker = False
-        print (f"{colour.red} Alt Website checker turned off") #black background, red text
+        print (f"{colour.red} Alt Website checker turned off{colour.default}")
     else:
         use_alt_checker = True
-        print (f"{colour.green} Alt Website checker turned on") #black background, green text
+        print (f"{colour.green} Alt Website checker turned on{colour.default}")
     return
 
 #turn off and on logger module.
@@ -259,10 +259,10 @@ def toggle_logger():
     global logger_is_on
     if (logger_is_on):
         logger_is_on = False
-        print (f"{colour.red} Logger turned off. ") #black background, red text
+        print (f"{colour.red} Logger turned off.{colour.default}")
     else:
         logger_is_on = True
-        print (f"{colour.green} logger turned on") #black background, green text
+        print (f"{colour.green} logger turned on.{colour.default}")
     return
 
 def toggle_all_players():
@@ -270,10 +270,10 @@ def toggle_all_players():
     if (log_all_players):
         log_all_players = False
         currently_online_flush()
-        print (f"{colour.red} Log All Players Off.") #black background, red text
+        print (f"{colour.red} Log All Players Off.{colour.default}")
     else:
         log_all_players = True
-        print (f"{colour.green} Log All Players On.") #black background, green text
+        print (f"{colour.green} Log All Players On.{colour.default}")
     return
 
 #update time interval between each refresh (not in use, troubleshoot)
@@ -292,7 +292,7 @@ def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
-        print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} \u001b[0m") #Red background, black text
+        print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {colour.default}")
         return False
     else:
         new_request = BeautifulSoup(new_request.text, "html.parser")
@@ -312,7 +312,7 @@ def get_online_list_alt(alt_link):
         new_request = BeautifulSoup(new_request.text, "html.parser")
         player_list = new_request.find_all("a", class_="c-black")
     except Exception:
-        print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} ") #Red background, black text
+        print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {colour.default}")
         return False
     else:
         player_list = list(map(get_innerHTML, player_list))
@@ -326,9 +326,9 @@ def play_sound(sound_file):
             play.wait_done()
             play.stop()
         except FileNotFoundError:
-            print(f"{colour.error} {sound_file} file not found. ") #Red background, black text
+            print(f"{colour.error} {sound_file} file not found. {colour.default}")
         except Exception:
-            print (f"{colour.error} Error with playing notification audio. ") #Red background, black text
+            print (f"{colour.error} Error with playing notification audio. {colour.default}")
         finally:
             return
 
@@ -337,7 +337,7 @@ def target_check(player_count, server):
     global target_reached
     if (player_count >= config.target and target_reached[server] is False):
         target_reached[server] = True
-        print(f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ") #default background, blue text
+        print(f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
         play_sound("chime.wav")
     elif (player_count < config.target and target_reached[server] is True):
         target_reached[server] = False
@@ -351,9 +351,9 @@ def login_check_all(online_list, server):
             currently_online_list[server].append(each_player)
             if (each_player in config.players):
                 play_sound("login.wav")
-                login_list.append(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default background, green text
+                login_list.append(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{colour.default}")
             else:
-                login_list.append(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {colour.default}") #default all
+                login_list.append(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {colour.default}")
     return login_list
 
 #log players in config who log on to server
@@ -363,7 +363,7 @@ def login_check(online_list, server):
     login_list = []
     for each_player in found_list:
         if (each_player not in currently_online_list[server]):
-            login_list.append(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} ") #default background, green text
+            login_list.append(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{colour.default}")
             currently_online_list[server].append(each_player)
             play_sound("login.wav")
     return login_list
@@ -377,9 +377,9 @@ def logout_check(online_list, server):
             currently_online_list[server].remove(each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                logout_list.append(f"{colour.red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}") #default background, red text
+                logout_list.append(f"{colour.red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{colour.default}")
             else:
-                logout_list.append(f"{colour.default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {colour.default}") #default all
+                logout_list.append(f"{colour.default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
     return logout_list
 
 # quick command function that displays to users all online players in config servers
@@ -393,13 +393,13 @@ def quick_check():
         if (online_list == None):
             return
         elif (len(online_list) == 0):
-            print(f"{colour.blue} 0 players found on Server: {config.servers[index]} \u001b[0m") #default background, blue text
+            print(f"{colour.blue} 0 players found on Server: {config.servers[index]}{colour.default}")
         else:
             for each_player in online_list:
                 if (each_player in config.players):
-                    print(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")  #default background, green text
+                    print(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}{colour.default}")
                 else:
-                    print(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]} {colour.default}") #default text colour
+                    print(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")
         sleep(3)
     play_sound(str("chime.wav"))
 
@@ -450,12 +450,12 @@ def looper():
 #start application
 def start():
     if (active_count() > 1):
-        print(f"{colour.default} Checker already running. {colour.default}") #default all
+        print(f"{colour.default} Checker already running.")
         return
     if not(servers_are_valid()):
-        print (f"{colour.error} Invalid server error...\n check configurations or connection, and try again") #Red background, black text
+        print (f"{colour.error} Invalid server error...\n check configurations or connection, and try again.{colour.default}")
         return
-    print (f"{colour.green} Starting checker \n \u001b[0m")  #black background, green text
+    print (f"{colour.green} Starting checker... {colour.default}")
     global continue_condition
     continue_condition = True
     process = Thread(target=looper)
@@ -464,9 +464,9 @@ def start():
 #stop application
 def stop():
     if (active_count() == 1):
-        print (f"{colour.default} Checker not running.{colour.default}") #default all
+        print (f"{colour.default} Checker not running.")
         return
-    print (f"{colour.red} Stopping checker.\n \u001b[0m") #black background, red text
+    print (f"{colour.red} Stopping checker.\n {colour.default}")
     global continue_condition
     global currently_online_list
     continue_condition = False
@@ -501,12 +501,12 @@ def main():
             command_dict[user_input]()
         elif (user_input == "exit"):
             stop()
-            print("f{colour.red} Program exiting.")
+            print(f"{colour.red} Program exiting. {colour.default}")
             break
         elif (user_input == ""):
             print (f"{colour.default}")
         else:
-            print (f"{colour.error} Unknown command.")
+            print (f"{colour.error} Unknown command. {colour.default}")
 
 
 
