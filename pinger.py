@@ -69,9 +69,9 @@ class Config:
                 break
             elif (del_player in self.players):
                 self.players.remove(del_player)
+                update_config(self.__dict__)
             else:
                 print (f"{colour.error} Player is not found in config {colour.default}")
-            update_config(self.__dict__)
 
     #append new players to players list
     def add_player(self):
@@ -83,7 +83,7 @@ class Config:
                 print (f"{colour.error} Player is already on list. {colour.default}")
             else:
                 self.players.append(new_player)
-            update_config(self.__dict__)
+                update_config(self.__dict__)
 
     #prints all servers and corresponding indexes
     def server_index_printer(self):
@@ -130,6 +130,7 @@ class Config:
         for each_server in self.servers:
             print (f"{colour.default}IP: {each_server['url']} ")
             print (f"{colour.default}Target: {each_server['target']}" )
+            print ("-------------------------------")
 
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
@@ -175,7 +176,7 @@ class Config:
     #change interval between each GET request
     def change_interval(self):
             try:
-                self.interval = int(input(f"{colour.default} Enter an interval in seconds between each fetch (Anything over 30 is ill-advised)")) #default all
+                self.interval = int(input(f"{colour.default} Enter an interval in seconds between each fetch (Anything over 30 is ill-advised.)")) #default all
             except ValueError:
                 print (f"{colour.error} Input Error {colour.default}")
 
@@ -241,7 +242,7 @@ def refresh_log():
 def currently_online_flush():
     global currently_online_list
     for each_server in config.servers:
-        currently_online_list[each_server] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
+        currently_online_list[each_server]['url'] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
     return
 
 def toggle_alt_checker():
@@ -290,7 +291,7 @@ def toggle_all_players():
 
 def get_online_list(server):
     try:
-        new_request = get("https://minecraftlist.com/servers/" + server)
+        new_request = get("https://minecraftlist.com/servers/" + server['url'])
     except Exception:
         print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {colour.default}")
         return False
@@ -509,10 +510,8 @@ def main():
             print (f"{colour.error} Unknown command. {colour.default}")
 
 
-
-
 if __name__ == '__main__':
-    print(f"{colour.green} Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ") #default background, green text
+    print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     global continue_condition
     global currently_online_list
     global interval_dict
