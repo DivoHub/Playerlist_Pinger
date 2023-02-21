@@ -383,25 +383,24 @@ def logout_check(online_list, server):
                 logout_list.append(f"{colour.default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
     return logout_list
 
-# quick command function that displays to users all online players in config servers
+# quick command function that displays to users all online players in config servers (refactor because ugly)
 def quick_check():
     global use_alt_checker
-    for index in range(len(config.servers)):
+    for each_server in config.servers:
         if (use_alt_checker):
-            online_list = get_online_list_alt(config.alt_links[index])
+            online_list = get_online_list_alt(each_server['alt_link'])
         else:
-            online_list = get_online_list(config.servers[index])
+            online_list = get_online_list(each_server['url'])
         if (online_list == None):
             return
         elif (len(online_list) == 0):
-            print(f"{colour.blue} 0 players found on Server: {config.servers[index]}{colour.default}")
+            print(f"{colour.blue} 0 players found on Server: {each_server['url']}{colour.default}")
         else:
             for each_player in online_list:
                 if (each_player in config.players):
-                    print(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}{colour.default}")
+                    print(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{colour.default}")
                 else:
-                    print(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {config.servers[index]}")
-        sleep(3)
+                    print(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged
@@ -409,20 +408,19 @@ def checker():
     global log_all_players
     global use_alt_checker
     log_list = []
-    for index in range (len(config.servers)):
+    for each_server in config.servers:
         if (use_alt_checker):
-            online_list = get_online_list_alt(config.alt_links[index])
+            online_list = get_online_list_alt(each_server['alt_link'])
         else:
-            online_list = get_online_list(config.servers[index])
+            online_list = get_online_list(each_server['url'])
         if (online_list == False):
             return []
         if (log_all_players):
-            log_list.extend(login_check_all(online_list, config.servers[index]))
+            log_list.extend(login_check_all(online_list, each_server['url']))
         else:
-            log_list.extend(login_check(online_list, config.servers[index]))
-        log_list.extend(logout_check(online_list, config.servers[index]))
-        target_check(len(online_list), config.servers[index])
-        sleep(2)
+            log_list.extend(login_check(online_list, each_server['url']))
+        log_list.extend(logout_check(online_list, each_server['url']))
+        target_check(len(online_list), each_server['url'])
     return log_list
 
 #Halts program for configured time before making another request
@@ -437,14 +435,13 @@ def wait():
 #iterative function, continues if user has not stopped
 def looper():
     global continue_condition
-    global interval_dict
-    global log_all_players
+    global logger_is_on
     while continue_condition:
         config.load_config()
         status_log = checker()
         for each_status in status_log:
             print (each_status)
-            if logger_is_on:
+            if (logger_is_on):
                 logger(each_status)
         wait()
 
