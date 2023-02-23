@@ -205,6 +205,13 @@ def update_config(dict_object):
 def get_innerHTML(element):
     return element.string
 
+
+
+
+
+
+
+
 #checks validity of server IP / returns False if HTTP error code given or if blank
 def servers_are_valid():
     for each_server in config.servers:
