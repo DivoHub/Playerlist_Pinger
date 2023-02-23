@@ -34,7 +34,6 @@ class Config:
         create_config()
         self.add_player()
         self.add_server()
-        update_config(self.__dict__)
 
     #reinitialize all values for config file
     def start_new(self):
@@ -59,6 +58,7 @@ class Config:
             json_file = load(playerlist_file)
             self.players = json_file["players"]
             self.servers = json_file["servers"]
+            self.interval = json_file["interval"]
             playerlist_file.close()
 
     #remove specified player from checking list in config
@@ -124,6 +124,7 @@ class Config:
 
     #prints config values to console
     def print_values(self):
+        self.load_config()
         print (f"{colour.default}Number of Servers checking:  {len(self.servers)}")
         print(f"{colour.default}Number of Players checking: {len(self.players)}")
         print (f"{colour.default}Checking for players: {self.players} \n")
@@ -137,9 +138,9 @@ class Config:
         self.server_index_printer()
         try:
             server_index = int(input(f"{colour.default} Enter index (number) of server to change target for:    "))
-            self.servers[server_index]['target'] = int(input(f"{colour.default}Enter number target for {self.servers[server_index['url']]}:    "))
+            self.servers[server_index]['target'] = int(input(f"{colour.default}Enter number target for {self.servers[server_index]['url']}:    "))
         except ValueError:
-            print(f"{colour.error} Invalid input given. {colour.error}{colour.default}")
+            print(f"{colour.error} Invalid input given. {colour.default}")
         else:
             update_config(self.__dict__)
 
@@ -150,10 +151,9 @@ class Config:
         if (user_input == 'x'):
             return
         new_server.url = user_input
-        user_input = input(f"{colour.default}  Add an alt link? 'y' if yes.   ")
-        if (user_input != "y".casefold()):
-            return
-        new_server.alt_link = input(f"{colour.default} Enter alt link for server:  ")
+        user_input = input(f"{colour.default}  Add an alt link? 'y' if yes, enter to skip. ")
+        if (user_input == "y".casefold()):
+            new_server.alt_link = input(f"{colour.default} Enter alt link for server:  ")
         self.servers.append(new_server.__dict__)
         update_config(self.__dict__)
 
@@ -179,6 +179,8 @@ class Config:
                 self.interval = int(input(f"{colour.default} Enter an interval in seconds between each fetch (Anything over 30 is ill-advised.)")) #default all
             except ValueError:
                 print (f"{colour.error} Input Error {colour.default}")
+            else:
+                update_config(self.__dict__)
 
 #Prints help manual to console
 def print_manual():
@@ -249,10 +251,10 @@ def toggle_alt_checker():
     global use_alt_checker
     if (use_alt_checker):
         use_alt_checker = False
-        print (f"{colour.red} Alt Website checker turned off{colour.default}")
+        print (f"{colour.red} Alt Website checker turned off.{colour.default}")
     else:
         use_alt_checker = True
-        print (f"{colour.green} Alt Website checker turned on{colour.default}")
+        print (f"{colour.green} Alt Website checker turned on.{colour.default}")
     return
 
 #turn off and on logger module.
@@ -335,13 +337,15 @@ def play_sound(sound_file):
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
+    if (server['target'] == 0):
+        return
     global target_reached
-    if (player_count >= config.target and target_reached[server] is False):
-        target_reached[server] = True
-        print(f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+    if (player_count >= server['target'] and target_reached[server['url']] is False):
+        target_reached[server['url']] = True
         play_sound("chime.wav")
-    elif (player_count < config.target and target_reached[server] is True):
-        target_reached[server] = False
+        return str(f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+    elif (player_count < server['target'] and target_reached[server['url']] is True):
+        target_reached[server['url']] = False
 
 #log all players that log on to server
 def login_check_all(online_list, server):
@@ -420,7 +424,7 @@ def checker():
         else:
             log_list.extend(login_check(online_list, each_server['url']))
         log_list.extend(logout_check(online_list, each_server['url']))
-        target_check(len(online_list), each_server['url'])
+        log_list.append(target_check(len(online_list), each_server))
     return log_list
 
 #Halts program for configured time before making another request
@@ -449,6 +453,12 @@ def looper():
 def start():
     if (active_count() > 1):
         print(f"{colour.default} Checker already running.")
+        return
+    if (len(config.players) == 0):
+        print (f"{colour.error} Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again. ")
+        return
+    if (len(config.servers) == 0):
+        print (f"{colour.error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. ")
         return
     if not(servers_are_valid()):
         print (f"{colour.error} Invalid server error...\n check configurations or connection, and try again.{colour.default}")
@@ -502,7 +512,7 @@ def main():
             print(f"{colour.red} Program exiting. {colour.default}")
             break
         elif (user_input == ""):
-            print (f"{colour.default}")
+            print (f"{colour.default}\n")
         else:
             print (f"{colour.error} Unknown command. {colour.default}")
 
@@ -511,7 +521,6 @@ if __name__ == '__main__':
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     global continue_condition
     global currently_online_list
-    global interval_dict
     global target_reached
     global logger_is_on
     global log_all_players
@@ -521,13 +530,11 @@ if __name__ == '__main__':
     config.load_config()
     config.print_values()
     currently_online_list = dict()
-    interval_dict = dict()
     target_reached = dict()
     logger_is_on = False
     log_all_players = False
     use_alt_checker = False
     for each_server in config.servers:
-        currently_online_list[each_server] = []
-        interval_dict[each_server] = 0
-        target_reached[each_server] = False
+        currently_online_list[each_server['url']] = []
+        target_reached[each_server['url']] = False
     main()
