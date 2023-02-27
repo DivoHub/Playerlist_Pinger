@@ -325,7 +325,7 @@ def toggle_all_players():
 
 def get_online_list(server):
     try:
-        new_request = get("https://minecraftlist.com/servers/" + server['url'])
+        new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
         print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {colour.default}")
         return False
