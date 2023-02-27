@@ -375,7 +375,7 @@ def target_check(player_count, server):
     if (player_count >= server['target'] and target_reached[server['url']] is False):
         target_reached[server['url']] = True
         play_sound("chime.wav")
-        return str(f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
@@ -456,7 +456,7 @@ def checker():
         else:
             log_list.extend(login_check(online_list, each_server['url']))
         log_list.extend(logout_check(online_list, each_server['url']))
-        log_list.append(target_check(len(online_list), each_server))
+        target_check(len(online_list), each_server)
     return log_list
 
 #Halts program for configured time before making another request
@@ -511,7 +511,7 @@ def stop():
     global currently_online_list
     continue_condition = False
     for each_server in config.servers:
-        currently_online_list[each_server] = []
+        currently_online_list[each_server['url']] = []
 
 #main user input command line interface for application
 def main():
