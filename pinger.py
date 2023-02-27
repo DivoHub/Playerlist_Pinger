@@ -243,7 +243,7 @@ def servers_are_valid():
         if (len(each_server['url']) == 0):
             print (f"{colour.error} No Server IP given {colour.default}")
             return False
-        status_code = get("https://minecraftlist.com/servers/" + each_server).status_code
+        status_code = get("https://minecraftlist.com/servers/" + each_server['url']).status_code
         if (status_code >= 200 and status_code <= 299):
             return True
         elif (status_code == 404):
