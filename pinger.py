@@ -64,7 +64,7 @@ class Config:
         self.players = json_object['players']
         self.interval = json_object['interval']
         converted_server_list = []
-        for index in range (len(self.servers)):
+        for index in range (len(json_object['servers'])):
             print (index)
             server_dict = dict()
             server_dict['url'] = json_object['servers'][index]
