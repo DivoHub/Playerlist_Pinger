@@ -42,5 +42,4 @@ Telling me how trash the code is is also welcome
 
 ## Issues
 - Difficulties parallelizing threads to have separate refresh intervals (Sharing the same refresh interval 60 seconds is temporary solution)
-- No UI 
-- Create JSON handler/validator/converter module
+- No UI

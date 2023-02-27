@@ -45,21 +45,52 @@ class Config:
         self.add_player()
         self.add_server()
 
-    #loads config.json values / Initializes a config.json file if one is not found
-    def load_config(self):
+    # checks if config file given is valid
+    def config_validator(self):
+        json_object = self.config_handler()
+        if not(type(json_object['players']) is list and type(json_object['servers']) is list and type(json_object['interval']) is int):
+            print (f"{colour.error}Issue with config file compatibility. Please reinitialize, or fix config file before starting checker.{colour.default}")
+            return
+        if (len(json_object['players']) + len(json_object['servers']) == 0):
+            print (f"{colour.error}No players or servers given from config.json file.{colour.default}")
+            return
+        if not(all(type(each_element) is dict for each_element in json_object['servers'])):
+            self.config_conversion(json_object)
+            return
+
+    # Convert old json config files to be compatible with new version
+    def config_conversion(self, json_object):
+        self.players = json_object['players']
+        self.interval = json_object['interval']
+        converted_server_list = []
+        for index in len(self.servers):
+            server_dict = dict()
+            server_dict['url'] = json_object.servers[index]
+            server_dict['target'] = json_object.target
+            server_dict['alt_link'] = json_object.alt_links[index]
+            converted_server_list.append(server_dict)
+        self.servers = converted_server_list
+        update_config(self.__dict__)
+
+    def config_handler(self):
         try:
             playerlist_file = open('config.json', 'r')
+            json_file = load(playerlist_file)
         except FileNotFoundError:
             print (f"{colour.error} No config.json file found. {colour.default}")
             self.initialize()
         except Exception:
             print (f"{colour.error} Other error occurred. {colour.default}")
         else:
-            json_file = load(playerlist_file)
-            self.players = json_file["players"]
-            self.servers = json_file["servers"]
-            self.interval = json_file["interval"]
             playerlist_file.close()
+            return json_file
+
+    #loads config.json values / Initializes a config.json file if one is not found
+    def load_config(self):
+        json_file = self.config_handler()
+        self.players = json_file["players"]
+        self.servers = json_file["servers"]
+        self.interval = json_file["interval"]
 
     #remove specified player from checking list in config
     def delete_player(self):
@@ -204,12 +235,6 @@ def update_config(dict_object):
 #Returns InnerHTML string of given HTML elements/class
 def get_innerHTML(element):
     return element.string
-
-
-
-
-
-
 
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
@@ -534,6 +559,7 @@ if __name__ == '__main__':
     global use_alt_checker
     colour = Colour()
     config = Config()
+    config.config_validator()
     config.load_config()
     config.print_values()
     currently_online_list = dict()
