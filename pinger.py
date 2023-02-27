@@ -60,12 +60,10 @@ class Config:
 
     # Convert old json config files to be compatible with new version
     def config_conversion(self, json_object):
-        print ("converting")
         self.players = json_object['players']
         self.interval = json_object['interval']
         converted_server_list = []
         for index in range (len(json_object['servers'])):
-            print (index)
             server_dict = dict()
             server_dict['url'] = json_object['servers'][index]
             server_dict['target'] = json_object['target']
