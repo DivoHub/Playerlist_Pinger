@@ -342,6 +342,8 @@ def get_online_list(server):
 
 #get online list from different website if minecraftlist.net is out of service
 def get_online_list_alt(alt_link):
+    if (alt_link == None):
+        return False
     try:
         new_request = get(alt_link)
         new_request = BeautifulSoup(new_request.text, "html.parser")
