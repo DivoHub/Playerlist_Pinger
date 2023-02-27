@@ -65,9 +65,9 @@ class Config:
         converted_server_list = []
         for index in range (len(self.servers)):
             server_dict = dict()
-            server_dict['url'] = json_object.servers[index]
-            server_dict['target'] = json_object.target
-            server_dict['alt_link'] = json_object.alt_links[index]
+            server_dict['url'] = json_object['servers'][index]
+            server_dict['target'] = json_object['target']
+            server_dict['alt_link'] = json_object['alt_links'][index]
             converted_server_list.append(server_dict)
         self.servers = converted_server_list
         update_config(self.__dict__)
