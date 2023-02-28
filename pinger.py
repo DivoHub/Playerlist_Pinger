@@ -95,6 +95,13 @@ class Config:
 
     #remove specified player from checking list in config
     def delete_player(self):
+        if (len(self.players) == 0):
+            print (f"{colour.error}No players to delete{colour.default}")
+            return
+        elif (len(self.players) == 1):
+            self.players.pop()
+            update_config(self.__dict__)
+            return
         while True:
             del_player = input(f"{colour.default} Enter player name (case sensitive) enter 'x' when finished:    ")
             if (del_player == "x"):
