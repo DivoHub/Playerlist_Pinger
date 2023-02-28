@@ -72,6 +72,7 @@ class Config:
         self.servers = converted_server_list
         update_config(self.__dict__)
 
+    #loader for config.json file
     def config_handler(self):
         try:
             playerlist_file = open('config.json', 'r')
@@ -190,6 +191,12 @@ class Config:
 
     #delete specified player from checking list in config
     def delete_server(self):
+        if (len(self.servers) == 0):
+            print (f"{colour.error}No servers to delete.{colour.default}")
+            return
+        elif (len(self.servers) == 1):
+            self.servers.pop()
+            return
         self.server_index_printer()
         deletion_index = input(f"{colour.default} Enter index (number) of server to delete (enter 'x' to cancel):")
         if (deletion_index== "x"):
@@ -452,7 +459,7 @@ def checker():
         else:
             online_list = get_online_list(each_server['url'])
         if (online_list == False):
-            return []
+            break
         if (log_all_players):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
