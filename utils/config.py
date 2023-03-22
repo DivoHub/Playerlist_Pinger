@@ -1,3 +1,5 @@
+from server import Server
+
 class Config:
     def __init__(self):
         self.players = []
