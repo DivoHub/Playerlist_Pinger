@@ -1,3 +1,7 @@
+from requests import get
+from bs4 import BeautifulSoup
+from datetime import datetime
+from .get_innerhtml import get_innerHTML
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
 def servers_are_valid():
@@ -34,6 +38,4 @@ def get_online_list(server):
         online_list = list(map(get_innerHTML, player_list))
         return online_list
 
-#Returns InnerHTML string of given HTML elements/class
-def get_innerHTML(element):
-    return element.string
+

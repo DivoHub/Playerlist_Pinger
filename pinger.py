@@ -1,13 +1,4 @@
-from bs4 import BeautifulSoup
-from datetime import datetime
-from json import dumps, load
-from requests import get
-from simpleaudio import WaveObject
-from threading import Thread, active_count
-from time import sleep
-
-from utils import Config, Colour, alt_checker, check_all, checker, files, logger, looper, play_sound, request, start, stop
-
+import .utils.alt_checker
 
 #main user input command line interface for application
 def main():

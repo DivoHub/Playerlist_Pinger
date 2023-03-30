@@ -1,4 +1,5 @@
 from server import Server
+from .files import create_config, update_config
 
 class Config:
     def __init__(self):

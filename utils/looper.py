@@ -1,3 +1,6 @@
+from checker import checker
+from .logger import logger
+
 # Halts program for configured time before making another request
 def wait():
     global continue_condition
@@ -6,7 +9,6 @@ def wait():
             sleep(1)
         else:
             break
-
 
 # iterative function, continues if user has not stopped
 def looper():

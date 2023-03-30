@@ -1,3 +1,5 @@
+from simpleaudio import WaveObject
+
 #play notification sound
 def play_sound(sound_file):
         try:

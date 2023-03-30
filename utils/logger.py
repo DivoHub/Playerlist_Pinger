@@ -1,3 +1,5 @@
+
+
 #appends each status into log file in local folder. Creates log file if none exists
 def logger(status_string):
     try:

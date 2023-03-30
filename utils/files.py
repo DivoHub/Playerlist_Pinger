@@ -1,3 +1,5 @@
+from json import dumps
+
 
 #Prints help manual to console
 def print_manual():
