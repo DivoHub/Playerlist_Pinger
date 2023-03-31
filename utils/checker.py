@@ -71,7 +71,7 @@ def checker():
     log_list = []
     for each_server in config.servers:
         if (use_alt_checker):
-            online_list = get_online_list_alt(each_server['alt_link'])
+            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
         else:
             online_list = get_online_list(each_server['url'])
         if (online_list == False):
