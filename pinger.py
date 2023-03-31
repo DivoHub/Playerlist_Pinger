@@ -1,4 +1,7 @@
-import .utils.alt_checker
+
+
+
+from utils import *
 
 #main user input command line interface for application
 def main():
@@ -21,20 +24,19 @@ def main():
                     "help": print_manual}
 
     while True:
-        print (f"{colour.default} -------------------------")
+        print (f"{Colour().default} -------------------------")
         user_input = input()
-        print (f"{colour.default} -------------------------")
+        print (f"{Colour().default} -------------------------")
         if (user_input in command_dict.keys()):
             command_dict[user_input]()
         elif (user_input == "exit"):
             stop()
-            print(f"{colour.red} Program exiting. {colour.default}")
+            print(f"{Colour().red} Program exiting. {Colour().default}")
             break
         elif (user_input == ""):
-            print (f"{colour.default}\n")
+            print (f"{Colour().default}\n")
         else:
-            print (f"{colour.error} Unknown command. {colour.default}")
-
+            print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
@@ -44,7 +46,7 @@ if __name__ == '__main__':
     global logger_is_on
     global log_all_players
     global use_alt_checker
-    colour = Colour()
+    global config
     config = Config()
     config.config_validator()
     config.load_config()

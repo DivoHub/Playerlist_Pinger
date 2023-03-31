@@ -1,4 +1,4 @@
-
+from .colour import Colour
 
 #appends each status into log file in local folder. Creates log file if none exists
 def logger(status_string):
@@ -25,8 +25,8 @@ def toggle_logger():
     global logger_is_on
     if (logger_is_on):
         logger_is_on = False
-        print (f"{colour.red} Logger turned off.{colour.default}")
+        print (f"{Colour().red} Logger turned off.{Colour().default}")
     else:
         logger_is_on = True
-        print (f"{colour.green} logger turned on.{colour.default}")
+        print (f"{Colour().green} logger turned on.{Colour().default}")
     return

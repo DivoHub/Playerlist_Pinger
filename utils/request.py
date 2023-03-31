@@ -2,21 +2,22 @@ from requests import get
 from bs4 import BeautifulSoup
 from datetime import datetime
 from .get_innerhtml import get_innerHTML
+from .colour import Colour
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
 def servers_are_valid():
     for each_server in config.servers:
         if (len(each_server['url']) == 0):
-            print (f"{colour.error} No Server IP given {colour.default}")
+            print (f"{Colour().error} No Server IP given {Colour().default}")
             return False
         status_code = get("https://minecraftlist.com/servers/" + each_server['url']).status_code
         if (status_code >= 200 and status_code <= 299):
             return True
         elif (status_code == 404):
-            print(f"{colour.error} Invalid Server entered. {colour.default}")
+            print(f"{Colour().error} Invalid Server entered. {Colour().default}")
             return False
         else:
-            print(f"{colour.error} Connection error {colour.default}")
+            print(f"{Colour().error} Connection error {Colour().default}")
             return False
 
 
@@ -25,7 +26,7 @@ def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
-        print (f"{colour.error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {colour.default}")
+        print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         new_request = BeautifulSoup(new_request.text, "html.parser")

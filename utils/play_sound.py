@@ -1,4 +1,5 @@
 from simpleaudio import WaveObject
+from .colour import Colour
 
 #play notification sound
 def play_sound(sound_file):
@@ -8,8 +9,8 @@ def play_sound(sound_file):
             play.wait_done()
             play.stop()
         except FileNotFoundError:
-            print(f"{colour.error} {sound_file} file not found. {colour.default}")
+            print(f"{Colour().error} {sound_file} file not found. {Colour().default}")
         except Exception:
-            print (f"{colour.error} Error with playing notification audio. {colour.default}")
+            print (f"{Colour().error} Error with playing notification audio. {Colour().default}")
         finally:
             return

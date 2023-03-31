@@ -1,9 +1,9 @@
-from .colour import Colour
 from .play_sound import play_sound
 from .alt_checker import get_online_list_alt
 from .request import get_online_list
 from datetime import datetime
 from .check_all import login_check_all
+from .colour import Colour
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
@@ -13,7 +13,7 @@ def target_check(player_count, server):
     if (player_count >= server['target'] and target_reached[server['url']] is False):
         target_reached[server['url']] = True
         play_sound("chime.wav")
-        print (f"{colour.blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
@@ -25,7 +25,7 @@ def login_check(online_list, server):
     login_list = []
     for each_player in found_list:
         if (each_player not in currently_online_list[server]):
-            login_list.append(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{colour.default}")
+            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
             currently_online_list[server].append(each_player)
             play_sound("login.wav")
     return login_list
@@ -39,9 +39,9 @@ def logout_check(online_list, server):
             currently_online_list[server].remove(each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                logout_list.append(f"{colour.red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{colour.default}")
+                logout_list.append(f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
             else:
-                logout_list.append(f"{colour.default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                logout_list.append(f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
     return logout_list
 
 # quick command function that displays to users all online players in config servers (refactor because ugly)
@@ -55,13 +55,13 @@ def quick_check():
         if (online_list == None):
             return
         elif (len(online_list) == 0):
-            print(f"{colour.blue} 0 players found on Server: {each_server['url']}{colour.default}")
+            print(f"{Colour().blue} 0 players found on Server: {each_server['url']}{Colour().default}")
         else:
             for each_player in online_list:
                 if (each_player in config.players):
-                    print(f"{colour.green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{colour.default}")
+                    print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
                 else:
-                    print(f"{colour.default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
+                    print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged

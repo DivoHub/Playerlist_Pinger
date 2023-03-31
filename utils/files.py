@@ -1,5 +1,5 @@
 from json import dumps
-
+from .colour import Colour
 
 #Prints help manual to console
 def print_manual():
@@ -9,7 +9,7 @@ def print_manual():
 
 #create config.json file / no return variable
 def create_config():
-    print(f"{colour.default} Creating new config.json file.")
+    print(f"{Colour().default} Creating new config.json file.")
     new_file = open('config.json', 'x')
     new_file.close()
 
