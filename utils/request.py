@@ -5,7 +5,7 @@ from .get_innerhtml import get_innerHTML
 from .colour import Colour
 
 #checks validity of server IP / returns False if HTTP error code given or if blank
-def servers_are_valid():
+def servers_are_valid(config):
     for each_server in config.servers:
         if (len(each_server['url']) == 0):
             print (f"{Colour().error} No Server IP given {Colour().default}")

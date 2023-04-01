@@ -37,8 +37,7 @@ def get_online_list_last_resort(url):
             player_list.append(each_player['alt'])
         return player_list
 
-def toggle_alt_checker():
-    global use_alt_checker
+def toggle_alt_checker(use_alt_checker):
     if (use_alt_checker):
         use_alt_checker = False
         print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")

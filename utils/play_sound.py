@@ -4,7 +4,7 @@ from .colour import Colour
 #play notification sound
 def play_sound(sound_file):
         try:
-            audio_object = WaveObject.from_wave_file(f"./sounds/{sound_file}")
+            audio_object = WaveObject.from_wave_file(f"../sounds/{sound_file}")
             play = audio_object.play()
             play.wait_done()
             play.stop()

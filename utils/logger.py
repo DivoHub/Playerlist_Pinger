@@ -21,8 +21,7 @@ def refresh_log():
         log_file.close()
 
 #turn off and on logger module.
-def toggle_logger():
-    global logger_is_on
+def toggle_logger(logger_is_on):
     if (logger_is_on):
         logger_is_on = False
         print (f"{Colour().red} Logger turned off.{Colour().default}")
