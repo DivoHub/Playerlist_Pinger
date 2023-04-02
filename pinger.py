@@ -1,9 +1,7 @@
 from threading import Thread, active_count
-from utils.colour import Colour
-from utils.request import servers_are_valid
 from datetime import datetime
-from utils import *
 
+from utils import *
 
 
 #log all players that log on to server
@@ -27,7 +25,9 @@ def currently_online_flush(config):
         currently_online_list[each_server]['url'] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
     return
 
-def toggle_all_players(log_all_players, config):
+def toggle_all_players():
+    global config
+    global log_all_players
     if (log_all_players):
         log_all_players = False
         currently_online_flush(config)
@@ -35,6 +35,27 @@ def toggle_all_players(log_all_players, config):
     else:
         log_all_players = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
+    return
+
+#turn off and on logger module.
+def toggle_logger():
+    global logger_is_on
+    if (logger_is_on):
+        logger_is_on = False
+        print (f"{Colour().red} Logger turned off.{Colour().default}")
+    else:
+        logger_is_on = True
+        print (f"{Colour().green} logger turned on.{Colour().default}")
+    return
+
+def toggle_alt_checker():
+    global use_alt_checker
+    if (use_alt_checker):
+        use_alt_checker = False
+        print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")
+    else:
+        use_alt_checker = True
+        print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
     return
 
 #check if server size has reached specified target number
@@ -84,7 +105,7 @@ def quick_check():
     global use_alt_checker
     for each_server in config.servers:
         if (use_alt_checker):
-            online_list = get_online_list_alt(each_server['alt_link'])
+            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
         else:
             online_list = get_online_list(each_server['url'])
         if (online_list == None):
@@ -205,39 +226,39 @@ def main():
                 print(f"{Colour().red} Program exiting. {Colour().default}")
                 break
             case "addplayer":
-                config.add_player
+                config.add_player()
             case "delplayer":
-                config.delete_player
+                config.delete_player()
             case "addserver":
-                config.add_server
+                config.add_server()
             case "delserver":
-                config.delete_server
+                config.delete_server()
             case "online":
-                quick_check
+                quick_check()
             case "target":
-                config.change_target
+                config.change_target()
             case "config":
-                config.print_values
+                config.print_values()
             case "logger":
-                toggle_logger(logger_is_on)
+                toggle_logger()
             case "logall":
-                toggle_all_players(log_all_players, config)
+                toggle_all_players()
             case "alt":
-                toggle_alt_checker(use_alt_checker)
+                toggle_alt_checker()
             case "addalt":
-                config.add_alt_links
+                config.add_alt_links()
             case "delalt":
-                config.del_alt_links
+                config.del_alt_links()
             case "newlog":
-                refresh_log
+                refresh_log()
             case "fresh":
-                config.start_new
+                config.start_new()
             case "start":
-                start
+                start()
             case "stop":
-                stop
+                stop()
             case "help":
-                print_manual
+                print_manual()
             case _:
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 

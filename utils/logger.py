@@ -17,15 +17,8 @@ def refresh_log():
     except FileNotFoundError:
         log_file = open('log.txt', 'x')
     finally:
+        print ("Starting new log file...")
         log_file.write("")
         log_file.close()
+        print ("Success!")
 
-#turn off and on logger module.
-def toggle_logger(logger_is_on):
-    if (logger_is_on):
-        logger_is_on = False
-        print (f"{Colour().red} Logger turned off.{Colour().default}")
-    else:
-        logger_is_on = True
-        print (f"{Colour().green} logger turned on.{Colour().default}")
-    return
