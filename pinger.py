@@ -35,27 +35,35 @@ def toggle_all_players():
     else:
         log_all_players = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
+    config.logall_on = log_all_players
+    update_config(config.__dict__)
     return
 
 #turn off and on logger module.
 def toggle_logger():
     global logger_is_on
+    global config
     if (logger_is_on):
         logger_is_on = False
         print (f"{Colour().red} Logger turned off.{Colour().default}")
     else:
         logger_is_on = True
         print (f"{Colour().green} logger turned on.{Colour().default}")
+    config.logger_on = logger_is_on
+    update_config(config.__dict__)
     return
 
 def toggle_alt_checker():
     global use_alt_checker
+    global config
     if (use_alt_checker):
         use_alt_checker = False
         print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")
     else:
         use_alt_checker = True
         print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
+    config.alt_checker_on = use_alt_checker
+    update_config(config.__dict__)
     return
 
 #check if server size has reached specified target number

@@ -9,6 +9,9 @@ class Config:
         self.players = []
         self.servers = []
         self.interval = 120
+        self.logger_on = False
+        self.logall_on = False
+        self.alt_checker_on = False
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -21,6 +24,9 @@ class Config:
         warning = input(f"{Colour().warning}This will erase your previous config file, are you sure? 'y' to continue.{Colour().default}")
         if not (warning == 'y'):
             return
+        self.logger_on = False
+        self.logall_on = False
+        self.alt_checker_on = False
         self.players = []
         self.servers = []
         self.add_player()
@@ -73,6 +79,9 @@ class Config:
         self.players = json_file["players"]
         self.servers = json_file["servers"]
         self.interval = json_file["interval"]
+        self.logger_on = bool(json_file["logger_on"])
+        self.logall_on = bool(json_file["logall_on"])
+        self.alt_checker_on = bool(json_file["alt_checker_on"])
 
     #remove specified player from checking list in config
     def delete_player(self):
@@ -148,10 +157,20 @@ class Config:
         print (f"{Colour().default}Number of Servers checking:  {len(self.servers)}")
         print(f"{Colour().default}Number of Players checking: {len(self.players)}")
         print (f"{Colour().default}Checking for players: {self.players} \n")
+        if (self.logall_on):
+            print (f"Logger: On")
+        else:
+            print (f"Logger: Off")
+        if (self.logall_on):
+            print (f"Log all player traffic: On")
+        else:
+            print (f"Log all player traffic: Off")
         for each_server in self.servers:
             print (f"{Colour().default}IP: {each_server['url']} ")
             print (f"{Colour().default}Target: {each_server['target']}" )
             print ("-------------------------------")
+
+
 
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
