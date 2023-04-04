@@ -12,6 +12,7 @@ def create_config():
     print(f"{Colour().default} Creating new config.json file.")
     new_file = open('config.json', 'x')
     new_file.close()
+    print ("New config.json file created. Type and enter 'help' for info on adding players and servers.")
 
 #update config.json file / takes dictionary argument from Config object instance
 def update_config(dict_object):

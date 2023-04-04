@@ -1,15 +1,9 @@
 Commands
 -----------------------------
 
-start
-    -start checker
-
-stop
-    -stop checker
-
-exit
-    -exit application
-
+`````````````````````````````
+Configuration commands
+`````````````````````````````
 addplayer
     -append additional players to checking list
 
@@ -21,6 +15,28 @@ addserver
 
 delserver
     -delete server IP from server list
+
+target
+    -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
+
+fresh
+    -reinitialize, and create new config file. First time users enter this command to start
+
+config
+    -displays current config (players list, and server IPs)
+
+
+`````````````````````````````
+application commands
+`````````````````````````````
+start
+    -start checker
+
+stop
+    -stop checker
+
+exit
+    -exit application
 
 alt
     -minecraftlist.com will sometimes run into issues, toggle this on to make requests to an alternative website 'minecraft-statistic.com' (if no alt link is provided for the given server while alt is turned on, checker will skip server)
@@ -37,18 +53,10 @@ newlog
 online
     -print current list of players online
 
-target
-    -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
-
-config
-    -displays current config (players list, and server IPs)
-
-fresh
-    -reinitialize, and create new config file. First time users enter this command to start
-
 help
     -displays command list
 
 ---------------------
 made by darrxh
+source repo: github.com/darrxh/Playerlist_Pinger
 ---------------------

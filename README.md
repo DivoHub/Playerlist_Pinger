@@ -3,7 +3,12 @@
 Simple console application that pings user and logs when any specified players appear online in a given server IP (Java Edition)
 
 ## Overview
-Makes GET requests to minecraftlist.com to fetch player list data on user's behalf
+Makes periodic GET requests to minecraft statistic sites to fetch player list data on given server.
+
+Websites include:
+- minecraft-statistic.net
+- minecraftlist.com
+- mcsrvstat.us
 
 ## Dependencies
 ```bash

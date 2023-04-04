@@ -199,29 +199,30 @@ def stop():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
 
-#main user input command line interface for application
-def main():
-    print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
+def init():
+    global config
     global continue_condition
     global currently_online_list
     global target_reached
     global logger_is_on
     global log_all_players
     global use_alt_checker
-    global config
     config = Config()
-    config.config_validator()
-    config.load_config()
-    config.print_values()
-    currently_online_list = dict()
-    target_reached = dict()
-    logger_is_on = False
-    log_all_players = False
-    use_alt_checker = False
+    config.config_handler()
+    continue_condition = True
+    currently_online_list = {}
+    target_reached = {}
+    logger_is_on = config.logger_on
+    log_all_players = config.logall_on
+    use_alt_checker = config.alt_checker_on
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
         target_reached[each_server['url']] = False
 
+
+#main user input command line interface for application
+def main():
+    print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     while True:
         print (f"{Colour().default} -------------------------")
         user_input = input()
@@ -271,4 +272,5 @@ def main():
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
+    init()
     main()

@@ -15,35 +15,37 @@ class Config:
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
-        create_config()
-        self.add_player()
-        self.add_server()
+        self.__init__()
+        update_config(self.__dict__)
 
     #reinitialize all values for config file
     def start_new(self):
-        warning = input(f"{Colour().warning}This will erase your previous config file, are you sure? 'y' to continue.{Colour().default}")
+        warning = input(f"{Colour().warning}Start a new config file? any pre-existing config.json file will be deleted. Enter 'y' to continue.{Colour().default}")
         if not (warning == 'y'):
             return
-        self.logger_on = False
-        self.logall_on = False
-        self.alt_checker_on = False
-        self.players = []
-        self.servers = []
-        self.add_player()
-        self.add_server()
+        self.initialize()
+
+    def config_handler(self):
+        json_object = self.config_fetcher()
+        if (json_object == None):
+            return
+        if not(self.config_is_valid(json_object)):
+            return
+        self.load_config()
+        self.print_values()
 
     # checks if config file given is valid
-    def config_validator(self):
-        json_object = self.config_handler()
+    def config_is_valid(self, json_object):
+        if (json_object == None):
+            return False
         if not(type(json_object['players']) is list and type(json_object['servers']) is list and type(json_object['interval']) is int):
             print (f"{Colour().error}Issue with config file compatibility. Please reinitialize, or fix config file before starting checker.{Colour().default}")
-            return
+            return False
         if (len(json_object['players']) + len(json_object['servers']) == 0):
-            print (f"{Colour().error}No players or servers given from config.json file.{Colour().default}")
-            return
+            print (f"{Colour().warning}No players or servers given from config.json file. Please add before starting checker. {Colour().default}")
         if not(all(type(each_element) is dict for each_element in json_object['servers'])):
             self.config_conversion(json_object)
-            return
+        return True
 
     # Convert old json config files to be compatible with new version
     def config_conversion(self, json_object):
@@ -57,25 +59,31 @@ class Config:
             server_dict['alt_link'] = json_object['alt_links'][index]
             converted_server_list.append(server_dict)
         self.servers = converted_server_list
+        self.logger_on = False
+        self.logall_on = False
+        self.alt_checker_on = False
         update_config(self.__dict__)
 
     #loader for config.json file
-    def config_handler(self):
+    def config_fetcher(self):
         try:
-            playerlist_file = open('config.json', 'r')
-            json_file = load(playerlist_file)
+            playerlist_file = open('./config.json', 'r')
+            json_object = load(playerlist_file)
         except FileNotFoundError:
             print (f"{Colour().error} No config.json file found. {Colour().default}")
+            create_config()
             self.initialize()
+            return None
         except Exception:
-            print (f"{Colour().error} Other error occurred. {Colour().default}")
+            print (f"{Colour().error} Could not load config.json file. Please fix any issues before starting checker.{Colour().default}")
+            return None
         else:
             playerlist_file.close()
-            return json_file
+            return json_object
 
     #loads config.json values / Initializes a config.json file if one is not found
     def load_config(self):
-        json_file = self.config_handler()
+        json_file = self.config_fetcher()
         self.players = json_file["players"]
         self.servers = json_file["servers"]
         self.interval = json_file["interval"]
@@ -109,7 +117,7 @@ class Config:
             if (new_player == "x"):
                 break
             elif (new_player in self.players):
-                print (f"{Colour().error} Player is already on list. {Colour().default}")
+                print (f"{Colour().warning} Player is already on list. {Colour().default}")
             else:
                 self.players.append(new_player)
                 update_config(self.__dict__)
@@ -153,24 +161,17 @@ class Config:
 
     #prints config values to console
     def print_values(self):
-        self.load_config()
+        on_or_off = {True: f"{Colour().green}On{Colour().default}", False: f"{Colour().red}Off{Colour().default}"}
         print (f"{Colour().default}Number of Servers checking:  {len(self.servers)}")
         print(f"{Colour().default}Number of Players checking: {len(self.players)}")
         print (f"{Colour().default}Checking for players: {self.players} \n")
-        if (self.logall_on):
-            print (f"Logger: On")
-        else:
-            print (f"Logger: Off")
-        if (self.logall_on):
-            print (f"Log all player traffic: On")
-        else:
-            print (f"Log all player traffic: Off")
+        print (f"Logger: {on_or_off[self.logger_on]}")
+        print (f"Log all player traffic: {on_or_off[self.logall_on]}")
+        print(f"Use alternative websites: {on_or_off[self.alt_checker_on]}\n\n")
         for each_server in self.servers:
             print (f"{Colour().default}IP: {each_server['url']} ")
             print (f"{Colour().default}Target: {each_server['target']}" )
             print ("-------------------------------")
-
-
 
     #Change the number or size of playerlist to ping user for (Value 0 if setting is off, default is also 0)
     def change_target(self):
