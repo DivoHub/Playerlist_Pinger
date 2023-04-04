@@ -19,10 +19,11 @@ def login_check_all(online_list, server):
     return login_list
 
 #flushes the online list of all players who are not listed in config.json
-def currently_online_flush(config):
+def currently_online_flush():
     global currently_online_list
+    global config
     for each_server in config.servers:
-        currently_online_list[each_server]['url'] = list(filter(lambda player: player in config.players, currently_online_list[each_server]))
+        currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
     return
 
 def toggle_all_players():
@@ -30,7 +31,7 @@ def toggle_all_players():
     global log_all_players
     if (log_all_players):
         log_all_players = False
-        currently_online_flush(config)
+        currently_online_flush()
         print (f"{Colour().red} Log All Players Off.{Colour().default}")
     else:
         log_all_players = True
