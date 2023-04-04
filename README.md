@@ -11,6 +11,9 @@ Websites include:
 - mcsrvstat.us
 
 ## Dependencies
+
+- Python V3.10
+
 ```bash
 pip install bs4
 pip install simpleaudio
