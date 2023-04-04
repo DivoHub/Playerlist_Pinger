@@ -45,6 +45,15 @@ class Config:
             print (f"{Colour().warning}No players or servers given from config.json file. Please add before starting checker. {Colour().default}")
         if not(all(type(each_element) is dict for each_element in json_object['servers'])):
             self.config_conversion(json_object)
+        try:
+            json_object["logger_on"]
+            json_object["logall_on"]
+            json_object["alt_checker_on"]
+        except KeyError:
+            self.logall_on = False
+            self.logall_on = False
+            self.alt_checker_on = False
+            update_config(self.__dict__)
         return True
 
     # Convert old json config files to be compatible with new version
