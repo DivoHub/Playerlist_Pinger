@@ -50,11 +50,17 @@ class Config:
             json_object["logall_on"]
             json_object["alt_checker_on"]
         except KeyError:
-            self.logall_on = False
-            self.logall_on = False
-            self.alt_checker_on = False
-            update_config(self.__dict__)
+            self.add_settings()
         return True
+
+    def add_settings(self):
+        settings_dict = {}
+        settings_dict["logger_on"] = False
+        settings_dict["logall_on"] = False
+        settings_dict["alt_checker_on"] = False
+        json_file = self.config_fetcher()
+        json_file.update(settings_dict)
+        update_config(json_file)
 
     # Convert old json config files to be compatible with new version
     def config_conversion(self, json_object):
