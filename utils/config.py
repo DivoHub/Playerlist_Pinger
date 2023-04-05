@@ -204,35 +204,37 @@ class Config:
         new_server = Server()
         user_input = input(f"{Colour().default} Enter Server IP (enter 'x' to cancel):   ")
         if (user_input == 'x'):
-            return
+            return None
         new_server.url = user_input
         user_input = input(f"{Colour().default}  Add an alt link? 'y' if yes, enter to skip. ")
         if (user_input == "y".casefold()):
             new_server.alt_link = input(f"{Colour().default} Enter alt link for server:  ")
         self.servers.append(new_server.__dict__)
         update_config(self.__dict__)
+        return new_server.url
 
     #delete specified player from checking list in config
     def delete_server(self):
         if (len(self.servers) == 0):
             print (f"{Colour().error}No servers to delete.{Colour().default}")
-            return
+            return None
         elif (len(self.servers) == 1):
-            self.servers.pop()
-            return
+            deleted_server = self.servers.pop()
+            update_config(self.__dict__)
+            return deleted_server
         self.server_index_printer()
         deletion_index = input(f"{Colour().default} Enter index (number) of server to delete (enter 'x' to cancel):")
         if (deletion_index== "x"):
-            return
+            return None
         try:
-            deletion_index = int(deletion_index)
-            self.servers.pop(deletion_index)
+            deleted_server = self.servers.pop(int(deletion_index))
         except ValueError:
             print (f"{Colour().error}Invalid Entry.{Colour().default}")
         except IndexError:
             print (f"{Colour().error}Input does not correspond to a server index.{Colour().default}")
         else:
             update_config(self.__dict__)
+            return deleted_server
 
     #change interval between each GET request
     def change_interval(self):

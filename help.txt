@@ -16,6 +16,15 @@ addserver
 delserver
     -delete server IP from server list
 
+delalt
+    -delete alt link from given server IP
+
+addalt
+    -add alt link to given server IP
+
+interval
+    -change config interval
+
 target
     -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
 

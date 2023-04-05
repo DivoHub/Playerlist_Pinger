@@ -117,7 +117,7 @@ def quick_check():
             online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
         else:
             online_list = get_online_list(each_server['url'])
-        if (online_list == None):
+        if (online_list == None or type(online_list) == bool):
             return
         elif (len(online_list) == 0):
             print(f"{Colour().blue} 0 players found on Server: {each_server['url']}{Colour().default}")
@@ -220,7 +220,6 @@ def init():
         currently_online_list[each_server['url']] = []
         target_reached[each_server['url']] = False
 
-
 #main user input command line interface for application
 def main():
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
@@ -240,9 +239,17 @@ def main():
             case "delplayer":
                 config.delete_player()
             case "addserver":
-                config.add_server()
+                added_server = config.add_server()
+                if (added_server != None):
+                    global currently_online_list
+                    currently_online_list[added_server] = []
             case "delserver":
-                config.delete_server()
+                deleted_server = config.delete_server()
+                if (deleted_server != None):
+                    global currently_online_list
+                    del currently_online_list[deleted_server]
+            case "interval":
+                config.change_interval()
             case "online":
                 quick_check()
             case "target":
