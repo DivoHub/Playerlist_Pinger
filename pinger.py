@@ -164,22 +164,27 @@ def looper():
             print(each_status)
             if (logger_is_on):
                 logger(each_status)
-        wait(continue_condition, config)
+        wait(continue_condition, config.interval)
 
-#start application
-def start():
+def start_conditions_met():
     global config
     if (active_count() > 1):
         print(f"{Colour().default} Checker already running.")
-        return
+        return False
     if (len(config.players) == 0):
         print (f"{Colour().error} Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again. ")
-        return
+        return False
     if (len(config.servers) == 0):
         print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. ")
-        return
+        return False
     if not(servers_are_valid(config)):
         print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
+        return False
+    return True
+
+#start application
+def start():
+    if not (start_conditions_met()):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
     global continue_condition
