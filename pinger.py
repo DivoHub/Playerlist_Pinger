@@ -227,6 +227,7 @@ def init():
 
 #main user input command line interface for application
 def main():
+    global currently_online_list
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     while True:
         print (f"{Colour().default} -------------------------")
@@ -246,12 +247,10 @@ def main():
             case "addserver":
                 added_server = config.add_server()
                 if (added_server != None):
-                    global currently_online_list
                     currently_online_list[added_server] = []
             case "delserver":
                 deleted_server = config.delete_server()
                 if (deleted_server != None):
-                    global currently_online_list
                     del currently_online_list[deleted_server]
             case "interval":
                 config.change_interval()
