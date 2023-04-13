@@ -28,42 +28,36 @@ def currently_online_flush():
 
 def toggle_all_players():
     global config
-    global log_all_players
-    if (log_all_players):
-        log_all_players = False
+    if (config.logall_on):
+        config.logall_on = False
         currently_online_flush()
         print (f"{Colour().red} Log All Players Off.{Colour().default}")
     else:
-        log_all_players = True
+        config.logall_on = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
-    config.logall_on = log_all_players
     update_config(config.__dict__)
     return
 
 #turn off and on logger module.
 def toggle_logger():
-    global logger_is_on
     global config
-    if (logger_is_on):
-        logger_is_on = False
+    if (config.logger_on):
+        config.logger_on = False
         print (f"{Colour().red} Logger turned off.{Colour().default}")
     else:
-        logger_is_on = True
+        config.logger_on = True
         print (f"{Colour().green} logger turned on.{Colour().default}")
-    config.logger_on = logger_is_on
     update_config(config.__dict__)
     return
 
 def toggle_alt_checker():
-    global use_alt_checker
     global config
-    if (use_alt_checker):
-        use_alt_checker = False
+    if (config.alt_checker_on):
+        config.alt_checker_on = False
         print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")
     else:
-        use_alt_checker = True
+        config.alt_checker_on = True
         print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
-    config.alt_checker_on = use_alt_checker
     update_config(config.__dict__)
     return
 
@@ -111,9 +105,8 @@ def logout_check(online_list, server):
 # quick command function that displays to users all online players in config servers (refactor because ugly)
 def quick_check():
     global config
-    global use_alt_checker
     for each_server in config.servers:
-        if (use_alt_checker):
+        if (config.alt_checker_on):
             online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
         else:
             online_list = get_online_list(each_server['url'])
@@ -132,17 +125,15 @@ def quick_check():
 #checks for newly joined players and players who have logged
 def checker():
     global config
-    global use_alt_checker
-    global log_all_players
     log_list = []
     for each_server in config.servers:
-        if (use_alt_checker):
+        if (config.alt_checker_on):
             online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
         else:
             online_list = get_online_list(each_server['url'])
         if (online_list == False):
             break
-        if (log_all_players):
+        if (config.logall_on):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
             log_list.extend(login_check(online_list, each_server['url']))
@@ -154,15 +145,12 @@ def checker():
 def looper():
     global config
     global continue_condition
-    global logger_is_on
-    global use_alt_checker
-    global log_all_players
     while continue_condition:
         config.load_config()
         status_log = checker()
         for each_status in status_log:
             print(each_status)
-            if (logger_is_on):
+            if (config.logger_on):
                 logger(each_status)
         wait(continue_condition, config.interval)
 
@@ -210,17 +198,11 @@ def init():
     global continue_condition
     global currently_online_list
     global target_reached
-    global logger_is_on
-    global log_all_players
-    global use_alt_checker
     config = Config()
     config.config_handler()
     continue_condition = True
     currently_online_list = {}
     target_reached = {}
-    logger_is_on = config.logger_on
-    log_all_players = config.logall_on
-    use_alt_checker = config.alt_checker_on
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
         target_reached[each_server['url']] = False
