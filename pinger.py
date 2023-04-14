@@ -24,7 +24,6 @@ def currently_online_flush():
     global config
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
-    return
 
 def toggle_all_players():
     global config
@@ -36,7 +35,6 @@ def toggle_all_players():
         config.logall_on = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
     update_config(config.__dict__)
-    return
 
 #turn off and on logger module.
 def toggle_logger():
@@ -48,7 +46,6 @@ def toggle_logger():
         config.logger_on = True
         print (f"{Colour().green} logger turned on.{Colour().default}")
     update_config(config.__dict__)
-    return
 
 def toggle_alt_checker():
     global config
@@ -59,7 +56,6 @@ def toggle_alt_checker():
         config.alt_checker_on = True
         print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
     update_config(config.__dict__)
-    return
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
