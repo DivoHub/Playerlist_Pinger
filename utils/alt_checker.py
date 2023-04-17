@@ -23,6 +23,7 @@ def get_online_list_alt(alt_link, url):
         if (last_resort_condition(new_request)):
                 raise RuntimeError
     except RuntimeError:
+        print (url)
         return get_online_list_last_resort(url)
     except Exception:
         print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
@@ -34,9 +35,11 @@ def get_online_list_alt(alt_link, url):
 
 def get_online_list_last_resort(url):
     try:
-        new_request = get(f"mcsrvstat.us/server/{url}")
+        new_request = get(f"https://mcsrvstat.us/server/{url}")
         new_request = BeautifulSoup(new_request.text, "html.parser")
         new_request = new_request.find("tr", id="players").find_all('img',alt=True)
+    except AttributeError:
+        return False
     except Exception:
         print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
