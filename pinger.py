@@ -185,6 +185,8 @@ def start():
     continue_condition = True
     process = Thread(target=looper)
     process.start()
+    print (f"{Colour().green} Checker started. {Colour().default}")
+
 
 #stop application
 def stop():
@@ -192,12 +194,13 @@ def stop():
     if (active_count() == 1):
         print (f"{Colour().default} Checker not running.")
         return
-    print (f"{Colour().red} Stopping checker.\n {Colour().default}")
+    print (f"{Colour().red} Stopping checker...\n {Colour().default}")
     global continue_condition
     global currently_online_list
     continue_condition = False
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
+    print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
 def init():
     global config
