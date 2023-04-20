@@ -23,7 +23,6 @@ def get_online_list_alt(alt_link, url):
         if (last_resort_condition(new_request)):
                 raise RuntimeError
     except RuntimeError:
-        print (url)
         return get_online_list_last_resort(url)
     except Exception:
         print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
