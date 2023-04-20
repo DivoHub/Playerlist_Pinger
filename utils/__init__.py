@@ -6,5 +6,4 @@ from .files import print_manual, create_config, update_config
 from .get_innerhtml import get_innerHTML
 from .logger import logger, refresh_log
 from .request import servers_are_valid, get_online_list
-from .wait import wait
 from .play_sound import play_sound

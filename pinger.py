@@ -1,5 +1,6 @@
 from threading import Thread, active_count
 from datetime import datetime
+from time import sleep
 
 from utils import *
 
@@ -137,6 +138,15 @@ def checker():
         target_check(len(online_list), each_server)
     return log_list
 
+def wait(time):
+    global config
+    global continue_condition
+    for timer in range(config.interval):
+        if continue_condition:
+            sleep(1)
+        else:
+            break
+
 # iterative function, continues if user has not stopped
 def looper():
     global config
@@ -148,7 +158,7 @@ def looper():
             print(each_status)
             if (config.logger_on):
                 logger(each_status)
-        wait(continue_condition, config.interval)
+        wait()
 
 def start_conditions_met():
     global config
