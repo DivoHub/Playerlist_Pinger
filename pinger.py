@@ -138,7 +138,7 @@ def checker():
         target_check(len(online_list), each_server)
     return log_list
 
-def wait(time):
+def wait():
     global config
     global continue_condition
     for timer in range(config.interval):
