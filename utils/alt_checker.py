@@ -38,7 +38,7 @@ def get_online_list_last_resort(url):
         new_request = BeautifulSoup(new_request.text, "html.parser")
         new_request = new_request.find("tr", id="players").find_all('img',alt=True)
     except AttributeError:
-        return False
+        return []
     except Exception:
         print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
