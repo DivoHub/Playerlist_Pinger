@@ -1,4 +1,6 @@
-# Playerlist Pinger For Java Edition Minecraft   ![MC Icon](https://iili.io/6Jdw5g.png)
+# Minebell
+
+# Server player list alerts For Java Edition Minecraft   ![MC Icon](https://iili.io/6Jdw5g.png)
  
 Simple console application that pings user and logs when any specified players appear online in a given server IP (Java Edition)
 
