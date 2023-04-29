@@ -67,5 +67,5 @@ help
 
 ---------------------
 made by darrxh
-source repo: github.com/darrxh/Playerlist_Pinger
+source repo: github.com/darrxh/Minebell
 ---------------------
