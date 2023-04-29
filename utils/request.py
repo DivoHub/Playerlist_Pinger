@@ -40,3 +40,9 @@ def get_online_list(server):
         return online_list
 
 
+def updated_recently(request):
+    request = str(request.find("p", class_="text-center text-gray-500"))
+    if ("month" in request or "week" in request or "day" in request or "hour" in request):
+        return False
+    else:
+        return True
