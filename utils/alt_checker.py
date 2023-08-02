@@ -36,7 +36,8 @@ def get_online_list_last_resort(url):
     try:
         new_request = get(f"https://mcsrvstat.us/server/{url}")
         new_request = BeautifulSoup(new_request.text, "html.parser")
-        new_request = new_request.find("tr", id="players").find_all('img',alt=True)
+        new_request = new_request.find_all("div", id="players")
+        new_request = new_request[0].find_all("a")
     except AttributeError:
         return []
     except Exception:
@@ -45,7 +46,7 @@ def get_online_list_last_resort(url):
     else:
         player_list = []
         for each_player in new_request:
-            player_list.append(each_player['alt'])
+            player_list.append(each_player.find('img')['title'])
         return player_list
 
 

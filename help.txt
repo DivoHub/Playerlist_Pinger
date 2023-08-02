@@ -1,3 +1,23 @@
+Overview
+-----------------------------
+This is a console application made in Python used to track and log data on names of players who join and leave any
+given server (as specified in config file)
+
+This application works by scraping playerlists from 3 different websites:
+
+1. https://minecraftlist.com/
+2. https://minecraft-statistic.net/
+3. https://mcsrvstat.us/
+
+By default, the application will request data from "https://minecraftlist.com/"
+depending on downtime or website errors. You may have to use the other 2 websites by turning on the alternative checker
+This is done by typing "alt" on the application command line.
+since "https://minecraft-statistic.net/" does not format their urls coherently in relation to the server ip
+you can provide an alternative link by typing "addalt"
+if no alt link is specified, the application will then go to the third option
+which is "https://mcsrvstat.us/"
+
+
 Commands
 -----------------------------
 
