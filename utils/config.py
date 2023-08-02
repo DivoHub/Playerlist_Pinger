@@ -12,6 +12,7 @@ class Config:
         self.logger_on = False
         self.logall_on = False
         self.alt_checker_on = False
+        self.name_moderator_on = False
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -49,6 +50,7 @@ class Config:
             json_object["logger_on"]
             json_object["logall_on"]
             json_object["alt_checker_on"]
+            json_object["name_moderator_on"]
         except KeyError:
             self.add_settings()
         return True
@@ -58,6 +60,7 @@ class Config:
         settings_dict["logger_on"] = False
         settings_dict["logall_on"] = False
         settings_dict["alt_checker_on"] = False
+        settings_dict["name_moderator_on"] = False
         json_file = self.config_fetcher()
         json_file.update(settings_dict)
         update_config(json_file)
@@ -77,6 +80,7 @@ class Config:
         self.logger_on = False
         self.logall_on = False
         self.alt_checker_on = False
+        self.name_moderator_on = False
         update_config(self.__dict__)
 
     #loader for config.json file
@@ -105,6 +109,7 @@ class Config:
         self.logger_on = bool(json_file["logger_on"])
         self.logall_on = bool(json_file["logall_on"])
         self.alt_checker_on = bool(json_file["alt_checker_on"])
+        self.name_moderator_on = bool(json_file["name_moderator_on"])
 
     #remove specified player from checking list in config
     def delete_player(self):
@@ -182,7 +187,8 @@ class Config:
         print (f"{Colour().default}Checking for players: {self.players} \n")
         print (f"Logger: {on_or_off[self.logger_on]}")
         print (f"Log all player traffic: {on_or_off[self.logall_on]}")
-        print(f"Use alternative websites: {on_or_off[self.alt_checker_on]}\n\n")
+        print(f"Use alternative websites: {on_or_off[self.alt_checker_on]}\n")
+        print(f"Moderate player names: {on_or_off[self.name_moderator_on]}\n\n")
         for each_server in self.servers:
             print (f"{Colour().default}IP: {each_server['url']} ")
             print (f"{Colour().default}Target: {each_server['target']}" )

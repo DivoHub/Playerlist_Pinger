@@ -7,3 +7,4 @@ from .get_innerhtml import get_innerHTML
 from .logger import logger, refresh_log
 from .request import servers_are_valid, get_online_list
 from .play_sound import play_sound
+from .name_filter import name_filter
