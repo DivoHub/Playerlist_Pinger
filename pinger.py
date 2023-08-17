@@ -48,17 +48,6 @@ def toggle_logger():
         print (f"{Colour().green} logger turned on.{Colour().default}")
     update_config(config.__dict__)
 
-#turn off and on logger module.
-def toggle_name_moderator():
-    global config
-    if (config.name_moderator_on):
-        config.logger_on = False
-        print (f"{Colour().red} Name moderator turned off.{Colour().default}")
-    else:
-        config.logger_on = True
-        print (f"{Colour().green} Name moderator turned on.{Colour().default}")
-    update_config(config.__dict__)
-
 def toggle_alt_checker():
     global config
     if (config.alt_checker_on):
@@ -187,12 +176,6 @@ def start_conditions_met():
         return False
     return True
 
-def name_moderator():
-    global config
-    if (config.name_moderator_on == False):
-        return
-    process = Thread(target=name_filter)
-    process.start()
 
 #start application
 def start():
