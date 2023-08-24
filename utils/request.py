@@ -5,6 +5,7 @@ from .get_innerhtml import get_innerHTML
 from .colour import Colour
 
 
+
 #checks validity of server IP / returns False if HTTP error code given or if blank
 def servers_are_valid(config):
     for each_server in config.servers:
@@ -27,7 +28,6 @@ def get_online_list(server):
     try:
         new_request = get("https://minecraftlist.com/servers/" + server)
     except Exception:
-        print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         new_request = BeautifulSoup(new_request.text, "html.parser")
@@ -70,8 +70,6 @@ def get_online_list_alt(alt_link, url):
     except RuntimeError:
         return get_online_list_last_resort(url)
     except Exception:
-        print(
-            f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         player_list = new_request.find_all("a", class_="c-black")
@@ -86,8 +84,6 @@ def get_online_list_last_resort(url):
     except AttributeError:
         return []
     except Exception:
-        print(
-            f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         player_list = []

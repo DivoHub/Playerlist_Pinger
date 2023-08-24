@@ -25,7 +25,6 @@ def get_online_list_alt(alt_link, url):
     except RuntimeError:
         return get_online_list_last_resort(url)
     except Exception:
-        print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         player_list = new_request.find_all("a", class_="c-black")
@@ -41,7 +40,6 @@ def get_online_list_last_resort(url):
     except AttributeError:
         return []
     except Exception:
-        print (f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
         return False
     else:
         player_list = []

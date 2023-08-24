@@ -82,6 +82,7 @@ def target_check(player_count, server):
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
+
 #log players in config who log on to server
 def login_check(online_list, server):
     global config
@@ -131,7 +132,7 @@ def quick_check():
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged
-def checker():
+def checker(error_counter):
     global config
     log_list = []
     for each_server in config.servers:
@@ -140,7 +141,7 @@ def checker():
         else:
             online_list = get_online_list(each_server['url'])
         if (online_list == False):
-            break
+            return "error"
         if (config.logall_on):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
@@ -162,9 +163,17 @@ def wait():
 def looper():
     global config
     global continue_condition
+    error_count = 0
     while continue_condition:
         config.load_config()
         status_log = checker()
+        if (status_log == "error"):
+            error_count = print_connection_error(error_count)
+            wait()
+            continue
+        if (error_count > 1 and status_log != "error"):
+            print (f"{Colour().success}Connection reestablished. Total time disconnected: {error_count * config.interval} seconds{Colour().default}")
+            error_count = 0
         for each_status in status_log:
             print(each_status)
             if (config.logger_on):
@@ -204,7 +213,6 @@ def start():
     process = Thread(target=looper)
     process.start()
     print (f"{Colour().green} Checker started. {Colour().default}")
-
 
 #stop application
 def stop():
