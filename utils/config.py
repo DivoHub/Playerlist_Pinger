@@ -11,7 +11,7 @@ class Config:
         self.interval = 120
         self.logger_on = False
         self.logall_on = False
-        self.alt_checker_on = False
+        self.website = "https://minecraftlist.com/"
         self.name_moderator_on = False
 
     #Prompts user to add values to config and creates config.json file with those values

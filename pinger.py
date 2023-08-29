@@ -1,7 +1,6 @@
 from threading import Thread, active_count
 from datetime import datetime
 from time import sleep
-
 from utils import *
 
 
@@ -36,6 +35,18 @@ def toggle_all_players():
         config.logall_on = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
     update_config(config.__dict__)
+
+def website_selector():
+    global config
+    print (f"{Colour().default}__________________________________________")
+    print (f"Choose from the 3 websites to retrieve player list data (Enter the corresponding number.")
+    print ("1. https://minecraftlist.com/\n2. https://minecraft-statistic.net/ \n3. https://mcsrvstat.us/")
+    print (f"{Colour().default}__________________________________________")
+    user_input = input()
+    try:
+
+
+
 
 #turn off and on logger module.
 def toggle_logger():
@@ -256,8 +267,8 @@ def main():
                 toggle_logger()
             case "logall":
                 toggle_all_players()
-            case "alt":
-                toggle_alt_checker()
+            case "web":
+                website_selector()
             case "addalt":
                 config.add_alt_links()
             case "delalt":

@@ -21,7 +21,6 @@ def servers_are_valid(config):
             print(f"{Colour().error} Connection error {Colour().default}")
             return False
 
-
 #return list object with currently online players / makes GET request to URL
 def get_online_list(server):
     try:
