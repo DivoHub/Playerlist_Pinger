@@ -25,6 +25,7 @@ def currently_online_flush():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
+#Toggle between logging all player traffic, and logging specified player traffic
 def toggle_all_players():
     global config
     if (config.logall_on):
@@ -36,17 +37,32 @@ def toggle_all_players():
         print (f"{Colour().green} Log All Players On.{Colour().default}")
     update_config(config.__dict__)
 
+#Select between websites to scrape player list data
 def website_selector():
     global config
     print (f"{Colour().default}__________________________________________")
     print (f"Choose from the 3 websites to retrieve player list data (Enter the corresponding number.")
     print ("1. https://minecraftlist.com/\n2. https://minecraft-statistic.net/ \n3. https://mcsrvstat.us/")
     print (f"{Colour().default}__________________________________________")
-    user_input = input()
-    try:
-
-
-
+    while True:
+        user_input = input()
+        if (type(user_input) != int):
+            print(f"{Colour().error}Input is not a number.{Colour().default}")
+            continue
+        elif (user_input > 3 and user_input < 1):
+            print (f"{Colour().error}Input out of range.{Colour().default}")
+            continue
+        elif (user_input == 1):
+            config.website = "https://minecraftlist.com/"
+            break
+        elif (user_input == 2):
+            config.website = "https://minecraft-statistic.net/"
+            break
+        elif (user_input == 3):
+            config.website = "https://mcsrvstat.us/"
+            break
+    print (f"Website changed to: {config.website}")
+    update_config(config.__dict__)
 
 #turn off and on logger module.
 def toggle_logger():
@@ -57,16 +73,6 @@ def toggle_logger():
     else:
         config.logger_on = True
         print (f"{Colour().green} logger turned on.{Colour().default}")
-    update_config(config.__dict__)
-
-def toggle_alt_checker():
-    global config
-    if (config.alt_checker_on):
-        config.alt_checker_on = False
-        print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")
-    else:
-        config.alt_checker_on = True
-        print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
     update_config(config.__dict__)
 
 #check if server size has reached specified target number
@@ -171,6 +177,7 @@ def looper():
                 logger(each_status)
         wait()
 
+
 def start_conditions_met():
     global config
     if (active_count() > 1):
@@ -213,6 +220,7 @@ def stop():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
+
 
 def init():
     global config
