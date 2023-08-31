@@ -1,7 +1,6 @@
 from .colour import Colour
 from .server import Server
 from .config import Config
-from .alt_checker import get_online_list_alt, get_online_list_last_resort
 from .files import print_manual, create_config, update_config
 from .get_innerhtml import get_innerHTML
 from .logger import logger, refresh_log

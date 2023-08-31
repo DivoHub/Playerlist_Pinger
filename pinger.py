@@ -53,13 +53,13 @@ def website_selector():
             print (f"{Colour().error}Input out of range.{Colour().default}")
             continue
         elif (user_input == 1):
-            config.website = "https://minecraftlist.com/"
+            config.website = "https://minecraftlist.com/servers/"
             break
         elif (user_input == 2):
-            config.website = "https://minecraft-statistic.net/"
+            config.website = "https://minecraft-statistic.net/en/server/"
             break
         elif (user_input == 3):
-            config.website = "https://mcsrvstat.us/"
+            config.website = "https://mcsrvstat.us/server/"
             break
     print (f"Website changed to: {config.website}")
     update_config(config.__dict__)
@@ -120,10 +120,7 @@ def logout_check(online_list, server):
 def quick_check():
     global config
     for each_server in config.servers:
-        if (config.alt_checker_on):
-            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
-        else:
-            online_list = get_online_list(each_server['url'])
+        online_list = get_online_list(each_server['url'])
         if (online_list == None or type(online_list) == bool):
             return
         elif (len(online_list) == 0):
@@ -177,7 +174,6 @@ def looper():
                 logger(each_status)
         wait()
 
-
 def start_conditions_met():
     global config
     if (active_count() > 1):
@@ -194,7 +190,6 @@ def start_conditions_met():
         return False
     return True
 
-
 #start application
 def start():
     if not (start_conditions_met()):
@@ -205,7 +200,6 @@ def start():
     process = Thread(target=looper)
     process.start()
     print (f"{Colour().green} Checker started. {Colour().default}")
-
 
 #stop application
 def stop():
@@ -277,10 +271,6 @@ def main():
                 toggle_all_players()
             case "web":
                 website_selector()
-            case "addalt":
-                config.add_alt_links()
-            case "delalt":
-                config.del_alt_links()
             case "newlog":
                 refresh_log()
             case "fresh":
