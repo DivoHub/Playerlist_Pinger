@@ -1,5 +1,4 @@
 from json import load
-
 from utils.server import Server
 from .files import create_config, update_config
 from .colour import Colour
@@ -11,8 +10,6 @@ class Config:
         self.interval = 120
         self.logger_on = False
         self.logall_on = False
-        self.website = "https://minecraftlist.com/"
-        self.name_moderator_on = False
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):
@@ -22,66 +19,28 @@ class Config:
     #reinitialize all values for config file
     def start_new(self):
         warning = input(f"{Colour().warning}Start a new config file? any pre-existing config.json file will be deleted. Enter 'y' to continue.{Colour().default}")
-        if not (warning == 'y'):
+        if not (warning.casefold() == 'y'):
             return
         self.initialize()
 
-    def config_handler(self):
-        json_object = self.config_fetcher()
-        if (json_object == None):
-            return
-        if not(self.config_is_valid(json_object)):
-            return
-        self.load_config()
-        self.print_values()
-
     # checks if config file given is valid
     def config_is_valid(self, json_object):
-        if (json_object == None):
-            return False
-        if not(type(json_object['players']) is list and type(json_object['servers']) is list and type(json_object['interval']) is int):
-            print (f"{Colour().error}Issue with config file compatibility. Please reinitialize, or fix config file before starting checker.{Colour().default}")
-            return False
-        if (len(json_object['players']) + len(json_object['servers']) == 0):
-            print (f"{Colour().warning}No players or servers given from config.json file. Please add before starting checker. {Colour().default}")
-        if not(all(type(each_element) is dict for each_element in json_object['servers'])):
-            self.config_conversion(json_object)
+        condition_list = []
         try:
-            json_object["logger_on"]
-            json_object["logall_on"]
-            json_object["alt_checker_on"]
-            json_object["name_moderator_on"]
+            condition_list.append(type(json_object["logger_on"]) == bool)
+            condition_list.append(type(json_object["logall_on"]) == bool)
+            condition_list.append(type(json_object["servers"]) == list)
+            condition_list.append(type(json_object["interval"]) == int)
+            condition_list.append(type(json_object["players"]) == list)
         except KeyError:
-            self.add_settings()
-        return True
-
-    def add_settings(self):
-        settings_dict = {}
-        settings_dict["logger_on"] = False
-        settings_dict["logall_on"] = False
-        settings_dict["alt_checker_on"] = False
-        settings_dict["name_moderator_on"] = False
-        json_file = self.config_fetcher()
-        json_file.update(settings_dict)
-        update_config(json_file)
-
-    # Convert old json config files to be compatible with new version
-    def config_conversion(self, json_object):
-        self.players = json_object['players']
-        self.interval = json_object['interval']
-        converted_server_list = []
-        for index in range (len(json_object['servers'])):
-            server_dict = dict()
-            server_dict['url'] = json_object['servers'][index]
-            server_dict['target'] = json_object['target']
-            server_dict['alt_link'] = json_object['alt_links'][index]
-            converted_server_list.append(server_dict)
-        self.servers = converted_server_list
-        self.logger_on = False
-        self.logall_on = False
-        self.alt_checker_on = False
-        self.name_moderator_on = False
-        update_config(self.__dict__)
+            print (f"{Colour().error} Error loading keys from config.json file. \nCheck config.json file for validity issues {Colour().default}")
+        except Exception:
+            print (f"{Colour().error} Error occurred checking for config.json validity. {Colour().default}")
+        if (json_object["servers"]):
+            condition_list.append(type(json_object["servers"][0] == dict)
+        if (json_object["players"]):
+            condition_list.append(type(json_object["players"][0]) == str)
+        return all(condition_list)
 
     #loader for config.json file
     def config_fetcher(self):
@@ -94,22 +53,24 @@ class Config:
             self.initialize()
             return None
         except Exception:
-            print (f"{Colour().error} Could not load config.json file. Please fix any issues before starting checker.{Colour().default}")
-            return None
+            print (f"{Colour().error} Could not load config.json file. \nNo new config file could be created. \nPlease fix any issues with config file before starting checker.{Colour().default}")
+            exit()
         else:
             playerlist_file.close()
             return json_object
 
     #loads config.json values / Initializes a config.json file if one is not found
     def load_config(self):
-        json_file = self.config_fetcher()
-        self.players = json_file["players"]
-        self.servers = json_file["servers"]
-        self.interval = json_file["interval"]
-        self.logger_on = bool(json_file["logger_on"])
-        self.logall_on = bool(json_file["logall_on"])
-        self.alt_checker_on = bool(json_file["alt_checker_on"])
-        self.name_moderator_on = bool(json_file["name_moderator_on"])
+        json_object = self.config_fetcher()
+        if (json_object == None):
+            return
+        if not (self.config_is_valid(json_object)):
+
+        self.players = json_object["players"]
+        self.servers = json_object["servers"]
+        self.interval = json_object["interval"]
+        self.logger_on = bool(json_object["logger_on"])
+        self.logall_on = bool(json_object["logall_on"])
 
     #remove specified player from checking list in config
     def delete_player(self):
@@ -122,7 +83,7 @@ class Config:
             return
         while True:
             del_player = input(f"{Colour().default} Enter player name (case sensitive) enter 'x' when finished:    ")
-            if (del_player == "x"):
+            if (del_player.casefold() == "x"):
                 break
             elif (del_player in self.players):
                 self.players.remove(del_player)
@@ -134,7 +95,7 @@ class Config:
     def add_player(self):
         while True:
             new_player = input(f"{Colour().default} Enter player name (enter 'x' when finished):    ")
-            if (new_player == "x"):
+            if (new_player.casefold() == "x"):
                 break
             elif (new_player in self.players):
                 print (f"{Colour().warning} Player is already on list. {Colour().default}")
@@ -149,36 +110,6 @@ class Config:
             print(f"{index}: {self.servers[index]['url']} \n")
         print("--------------------------------")
 
-    #if main web scrape is not working, use alt_link of each server
-    def add_alt_links(self):
-        self.server_index_printer()
-        try:
-            server_index = int(input(f"{Colour().default} Enter index (number) of server to add/change alt link to:     "))
-            new_alt_link = input(f"{Colour().default} Enter alt link for server on minecraft-statistic.net: ")
-            self.servers[server_index]['alt_link'] = new_alt_link
-        except ValueError:
-            print(f"{Colour().error} Invalid Input Given.{Colour().default}")
-        except IndexError:
-            print(f"{Colour().error} Index does not match a given server.{Colour().default}")
-        else:
-            update_config(self.__dict__)
-
-    #delete alt link for given server index
-    def del_alt_links(self):
-        self.server_index_printer()
-        try:
-            deletion_index = int(input(f"{Colour().default} Enter index (number) of server to delete alt link to:    {Colour().default}"))
-            if self.servers[deletion_index]['alt_link'] is None: raise KeyError
-            self.servers[deletion_index]['alt_link'] = None
-        except ValueError:
-            print(f"{Colour().error} Invalid Input Given. {Colour().default}")
-        except IndexError:
-            print(f"{Colour().error} Index does not match a given server.{Colour().default}")
-        except KeyError:
-            print(f"{Colour().error} Server does not have an alt link to delete.{Colour().default}")
-        else:
-            update_config(self.__dict__)
-
     #prints config values to console
     def print_values(self):
         on_or_off = {True: f"{Colour().green}On{Colour().default}", False: f"{Colour().red}Off{Colour().default}"}
@@ -187,8 +118,6 @@ class Config:
         print (f"{Colour().default}Checking for players: {self.players} \n")
         print (f"Logger: {on_or_off[self.logger_on]}")
         print (f"Log all player traffic: {on_or_off[self.logall_on]}")
-        print(f"Use alternative websites: {on_or_off[self.alt_checker_on]}\n")
-        print(f"Moderate player names: {on_or_off[self.name_moderator_on]}\n\n")
         for each_server in self.servers:
             print (f"{Colour().default}IP: {each_server['url']} ")
             print (f"{Colour().default}Target: {each_server['target']}" )
@@ -209,12 +138,9 @@ class Config:
     def add_server(self):
         new_server = Server()
         user_input = input(f"{Colour().default} Enter Server IP (enter 'x' to cancel):   ")
-        if (user_input == 'x'):
+        if (user_input.casefold() == 'x'):
             return None
         new_server.url = user_input
-        user_input = input(f"{Colour().default}  Add an alt link? 'y' if yes, enter to skip. ")
-        if (user_input == "y".casefold()):
-            new_server.alt_link = input(f"{Colour().default} Enter alt link for server:  ")
         self.servers.append(new_server.__dict__)
         update_config(self.__dict__)
         return new_server.url

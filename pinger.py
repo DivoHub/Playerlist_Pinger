@@ -173,7 +173,8 @@ def init():
     global currently_online_list
     global target_reached
     config = Config()
-    config.config_handler()
+    config.load_config()
+    config.print_values()
     continue_condition = True
     currently_online_list = {}
     target_reached = {}
