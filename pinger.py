@@ -4,27 +4,12 @@ from time import sleep
 from utils import *
 
 
-#log all players that log on to server
-def login_check_all(online_list, server):
-    global currently_online_list
-    login_list = []
-    for each_player in online_list:
-        if (each_player not in currently_online_list[server]):
-            currently_online_list[server].append(each_player)
-            if (each_player in config.players):
-                play_sound("login.wav")
-                login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-            else:
-                login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
-    return login_list
-
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush():
     global currently_online_list
     global config
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
-
 
 #check if server size has reached specified target number
 def target_check(player_count, server):
@@ -38,6 +23,20 @@ def target_check(player_count, server):
         print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
+
+#log all players that log on to server
+def login_check_all(online_list, server):
+    global currently_online_list
+    login_list = []
+    for each_player in online_list:
+        if (each_player not in currently_online_list[server]):
+            currently_online_list[server].append(each_player)
+            if (each_player in config.players):
+                play_sound("login.wav")
+                login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+            else:
+                login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
+    return login_list
 
 #log players in config who log on to server
 def login_check(online_list, server):
@@ -71,7 +70,7 @@ def logout_check(online_list, server):
 def quick_check():
     global config
     for each_server in config.servers:
-        online_list = service_director(each_server['url'])
+        online_list = get_online_list(each_server.url)
         if (online_list == None or type(online_list) == bool):
             return
         elif (len(online_list) == 0):
@@ -103,10 +102,9 @@ def checker():
         target_check(len(online_list), each_server)
     return log_list
 
-def wait():
-    global config
+def wait(interval):
     global continue_condition
-    for timer in range(config.interval):
+    for timer in range(interval):
         if continue_condition:
             sleep(1)
         else:
@@ -117,13 +115,13 @@ def looper():
     global config
     global continue_condition
     while continue_condition:
-        config.load_config()
         status_log = checker()
         for each_status in status_log:
             print(each_status)
             if (config.logger_on):
                 logger(each_status)
-        wait()
+        config.load_config()
+        wait(config.interval)
 
 def start_conditions_met():
     global config
@@ -143,6 +141,8 @@ def start_conditions_met():
 
 #start application
 def start():
+    global config
+    config.load_config()
     if not (start_conditions_met()):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
@@ -185,6 +185,7 @@ def init():
 #main user input command line interface for application
 def main():
     global currently_online_list
+    global config
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     while True:
         print (f"{Colour().default} -------------------------")
@@ -221,11 +222,12 @@ def main():
                 toggle_logger()
             case "logall":
                 toggle_all_players()
-            case "web":
-                website_selector()
+            case "reload":
+                config.load_config()
+                config.print_values()
             case "newlog":
                 refresh_log()
-            case "fresh":
+            case "newconfig":
                 config.start_new()
             case "start":
                 start()

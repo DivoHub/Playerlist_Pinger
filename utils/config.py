@@ -34,10 +34,12 @@ class Config:
             condition_list.append(type(json_object["players"]) == list)
         except KeyError:
             print (f"{Colour().error} Error loading keys from config.json file. \nCheck config.json file for validity issues {Colour().default}")
+            return False
         except Exception:
             print (f"{Colour().error} Error occurred checking for config.json validity. {Colour().default}")
+            return False
         if (json_object["servers"]):
-            condition_list.append(type(json_object["servers"][0] == dict)
+            condition_list.append(type(json_object["servers"][0]) == dict)
         if (json_object["players"]):
             condition_list.append(type(json_object["players"][0]) == str)
         return all(condition_list)
@@ -53,8 +55,9 @@ class Config:
             self.initialize()
             return None
         except Exception:
-            print (f"{Colour().error} Could not load config.json file. \nNo new config file could be created. \nPlease fix any issues with config file before starting checker.{Colour().default}")
-            exit()
+            print (f"{Colour().error} Error loading config.json file\nPlease fix any issues with config file before starting checker.{Colour().default}")
+            self.__init__()
+            return None
         else:
             playerlist_file.close()
             return json_object
@@ -65,7 +68,7 @@ class Config:
         if (json_object == None):
             return
         if not (self.config_is_valid(json_object)):
-
+            return
         self.players = json_object["players"]
         self.servers = json_object["servers"]
         self.interval = json_object["interval"]
