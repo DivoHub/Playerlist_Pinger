@@ -70,11 +70,10 @@ def logout_check(online_list, server):
 def quick_check():
     global config
     for each_server in config.servers:
+
         online_list = get_online_list(each_server.url)
-        if (online_list == None or type(online_list) == bool):
+        if (online_list == None):
             return
-        elif (len(online_list) == 0):
-            print(f"{Colour().blue} 0 players found on Server: {each_server['url']}{Colour().default}")
         else:
             for each_player in online_list:
                 if (each_player in config.players):
