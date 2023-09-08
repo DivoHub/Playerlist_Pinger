@@ -10,6 +10,29 @@ def currently_online_flush():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
+#turn off and on logger module.
+def toggle_logger():
+    global config
+    if (config.logger_on):
+        config.logger_on = False
+        print (f"{Colour().red} Logger turned off.{Colour().default}")
+    else:
+        config.logger_on = True
+        print (f"{Colour().green} logger turned on.{Colour().default}")
+    update_config(config.__dict__)
+
+#Toggle between logging all player traffic, and logging specified player traffic
+def toggle_all_players():
+    global config
+    if (config.logall_on):
+        config.logall_on = False
+        currently_online_flush()
+        print (f"{Colour().red} Log All Players Off.{Colour().default}")
+    else:
+        config.logall_on = True
+        print (f"{Colour().green} Log All Players On.{Colour().default}")
+    update_config(config.__dict__)
+
 #log all players that log on to server
 def login_check_all(online_list, server):
     global currently_online_list
@@ -83,20 +106,20 @@ def target_check(server, player_count):
         target_reached[server['url']] = False
 
 #checks for newly joined players and players who have logged
-def checker(error_counter):
+def checker():
     global config
     log_list = []
     for each_server in config.servers:
-        server_object = get_server_object(each_server.url)
+        server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
-        player_count = get_player_count(server_object)
         if (online_list == None):
-            continue
+            return None
         if (config.logall_on):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
             log_list.extend(login_check(online_list, each_server['url']))
         log_list.extend(logout_check(online_list, each_server['url']))
+        player_count = get_player_count(server_object)
         target_check(each_server, player_count)
         return log_list
 
@@ -115,36 +138,35 @@ def looper():
     global continue_condition
     error_count = 0
     while continue_condition:
+        config.load_config()
         status_log = checker()
-        if (status_log == "error"):
-            error_count = print_connection_error(error_count)
-            wait()
+        error_count = error_handler(error_count, status_log, config.interval)
+        if (status_log == None):
+            wait(config.interval)
             continue
-        if (error_count > 1 and status_log != "error"):
-            print (f"{Colour().success}Connection reestablished. Total time disconnected: {error_count * config.interval} seconds{Colour().default}")
-            error_count = 0
         for each_status in status_log:
             print(each_status)
             if (config.logger_on):
                 logger(each_status)
-        config.load_config()
         wait(config.interval)
 
-#
+#checks if checker is already running, and verifies the validity of config.json file
 def start_conditions_met():
     global config
     if (active_count() > 1):
-        print(f"{Colour().default} Checker already running.")
+        print(f"{Colour().error} Checker already running.{Colour().default}")
         return False
     if (len(config.players) == 0):
-        print (f"{Colour().error} Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again. ")
+        print (f"{Colour().error} Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again. {Colour().default}")
         return False
     if (len(config.servers) == 0):
-        print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. ")
+        print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. {Colour().default}")
+        return False
+    if not (internet_is_working()):
+        print (f"{Colour().error} No internet connection. Check connection before starting.{Colour().default}")
         return False
     for each_server in config.servers:
         if not(server_is_valid(each_server['url'])):
-            print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
             return False
     return True
 
@@ -175,7 +197,7 @@ def stop():
         currently_online_list[each_server['url']] = []
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
-
+#initializes variables before application runs
 def init():
     global config
     global continue_condition
@@ -213,7 +235,7 @@ def main():
                 config.delete_player()
             case "addserver":
                 added_server = config.add_server()
-                if (added_server != None):
+                if (added_server != None and server_is_valid(added_server)):
                     currently_online_list[added_server] = []
             case "delserver":
                 deleted_server = config.delete_server()

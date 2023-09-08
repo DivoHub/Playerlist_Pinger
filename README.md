@@ -12,13 +12,22 @@ Websites include:
 
 ## Dependencies
 
-- Python V3.10
+- **Python V3.10** (or later)
+
+
+- **simpleaudio**
+  - License: MIT
+  - [GitHub Repository](https://github.com/hamiltron/py-simple-audio)
+
+- **mcstatus**
+  - License: Apache License 2.0
+  - [GitHub Repository](https://github.com/py-mine/mcstatus)
 
 ```bash
-pip install bs4
 pip install simpleaudio
-pip install requests
+pip install mcstatus
 ```
+
 ## Usage
 1. Clone Repo or download/unzip folder onto local machine
 
@@ -33,7 +42,7 @@ Or
 ```bash
 python3 pinger.py
 ```
-4. Type and enter 'fresh' to initialize configurations.
+4. Type and enter 'newconfig' to initialize configurations.
 
 5. Type and enter 'start' to begin running checker
 
@@ -49,5 +58,5 @@ Telling me how trash the code is is also welcome
 
 
 ## Issues
-- Difficulties parallelizing threads to have separate refresh intervals (Sharing the same refresh interval 60 seconds is temporary solution)
+- Existence of Global Variables
 - No UI
