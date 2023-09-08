@@ -25,10 +25,8 @@ This application utilizes the ***mcstatus*** library to incrementally fetch serv
 2. Install dependencies using PIP
 
 ```bash
-pip install simpleaudio
-pip install mcstatus
+pip install -r requirements.txt
 ```
-
 
 4. Open terminal from repository folder then run the following command:
 ```bash
@@ -46,6 +44,8 @@ python3 pinger.py
 - Type and enter 'help' to see full list of commands
 
 **Example config.json file:**
+
+
  ![config example](https://i.ibb.co/B3pD02q/Screenshot-2023-09-02-113850.png)
 
 
