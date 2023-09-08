@@ -1,23 +1,7 @@
 from threading import Thread, active_count
 from datetime import datetime
 from time import sleep
-
 from utils import *
-
-
-#log all players that log on to server
-def login_check_all(online_list, server):
-    global currently_online_list
-    login_list = []
-    for each_player in online_list:
-        if (each_player not in currently_online_list[server]):
-            currently_online_list[server].append(each_player)
-            if (each_player in config.players):
-                play_sound("login.wav")
-                login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-            else:
-                login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
-    return login_list
 
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush():
@@ -26,61 +10,20 @@ def currently_online_flush():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
-def toggle_all_players():
-    global config
-    if (config.logall_on):
-        config.logall_on = False
-        currently_online_flush()
-        print (f"{Colour().red} Log All Players Off.{Colour().default}")
-    else:
-        config.logall_on = True
-        print (f"{Colour().green} Log All Players On.{Colour().default}")
-    update_config(config.__dict__)
-
-#turn off and on logger module.
-def toggle_logger():
-    global config
-    if (config.logger_on):
-        config.logger_on = False
-        print (f"{Colour().red} Logger turned off.{Colour().default}")
-    else:
-        config.logger_on = True
-        print (f"{Colour().green} logger turned on.{Colour().default}")
-    update_config(config.__dict__)
-
-#turn off and on logger module.
-def toggle_name_moderator():
-    global config
-    if (config.name_moderator_on):
-        config.logger_on = False
-        print (f"{Colour().red} Name moderator turned off.{Colour().default}")
-    else:
-        config.logger_on = True
-        print (f"{Colour().green} Name moderator turned on.{Colour().default}")
-    update_config(config.__dict__)
-
-def toggle_alt_checker():
-    global config
-    if (config.alt_checker_on):
-        config.alt_checker_on = False
-        print (f"{Colour().red} Alt Website checker turned off.{Colour().default}")
-    else:
-        config.alt_checker_on = True
-        print (f"{Colour().green} Alt Website checker turned on.{Colour().default}")
-    update_config(config.__dict__)
-
-#check if server size has reached specified target number
-def target_check(player_count, server):
-    global config
-    if (server['target'] == 0):
-        return
-    global target_reached
-    if (player_count >= server['target'] and target_reached[server['url']] is False):
-        target_reached[server['url']] = True
-        play_sound("chime.wav")
-        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
-    elif (player_count < server['target'] and target_reached[server['url']] is True):
-        target_reached[server['url']] = False
+#log all players that log on to server
+def login_check_all(online_list, server):
+    global currently_online_list
+    login_list = []
+    for each_player in online_list:
+        if (each_player in currently_online_list[server]):
+            continue
+        currently_online_list[server].append(each_player)
+        if (each_player in config.players):
+            play_sound("login.wav")
+            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        else:
+            login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
+    return login_list
 
 
 #log players in config who log on to server
@@ -90,10 +33,11 @@ def login_check(online_list, server):
     found_list = list(set(config.players).intersection(online_list))
     login_list = []
     for each_player in found_list:
-        if (each_player not in currently_online_list[server]):
-            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-            currently_online_list[server].append(each_player)
-            play_sound("login.wav")
+        if (each_player in currently_online_list[server]):
+            continue
+        login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        currently_online_list[server].append(each_player)
+        play_sound("login.wav")
     return login_list
 
 #log players that log out
@@ -111,61 +55,66 @@ def logout_check(online_list, server):
                 logout_list.append(f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
     return logout_list
 
-# quick command function that displays to users all online players in config servers (refactor because ugly)
+# quick command function that displays to users all online players in config servers
 def quick_check():
     global config
     for each_server in config.servers:
-        if (config.alt_checker_on):
-            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
-        else:
-            online_list = get_online_list(each_server['url'])
-        if (online_list == None or type(online_list) == bool):
+        server_object = get_server_object(each_server.url)
+        online_list = get_online_list(server_object)
+        if (online_list == None):
             return
-        elif (len(online_list) == 0):
-            print(f"{Colour().blue} 0 players found on Server: {each_server['url']}{Colour().default}")
-        else:
-            for each_player in online_list:
-                if (each_player in config.players):
-                    print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
-                else:
-                    print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
+        for each_player in online_list:
+            if (each_player in config.players):
+                print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
+            else:
+                print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
     play_sound(str("chime.wav"))
+
+#check if server size has reached specified target number
+def target_check(server, player_count):
+    if (server['target'] == 0):
+        return
+    global target_reached
+    if (player_count >= server['target'] and target_reached[server['url']] is False):
+        target_reached[server['url']] = True
+        play_sound("chime.wav")
+        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+    elif (player_count < server['target'] and target_reached[server['url']] is True):
+        target_reached[server['url']] = False
 
 #checks for newly joined players and players who have logged
 def checker(error_counter):
     global config
     log_list = []
     for each_server in config.servers:
-        if (config.alt_checker_on):
-            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
-        else:
-            online_list = get_online_list(each_server['url'])
-        if (online_list == False):
-            return "error"
+        server_object = get_server_object(each_server.url)
+        online_list = get_online_list(server_object)
+        player_count = get_player_count(server_object)
+        if (online_list == None):
+            continue
         if (config.logall_on):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
             log_list.extend(login_check(online_list, each_server['url']))
         log_list.extend(logout_check(online_list, each_server['url']))
-        target_check(len(online_list), each_server)
-    return log_list
+        target_check(each_server, player_count)
+        return log_list
 
-def wait():
-    global config
+#looper thread sleeps for configured time
+def wait(interval):
     global continue_condition
-    for timer in range(config.interval):
+    for timer in range(interval):
         if continue_condition:
             sleep(1)
         else:
             break
 
-# iterative function, continues if user has not stopped
+#iterative function, continues if user has not stopped
 def looper():
     global config
     global continue_condition
     error_count = 0
     while continue_condition:
-        config.load_config()
         status_log = checker()
         if (status_log == "error"):
             error_count = print_connection_error(error_count)
@@ -178,8 +127,10 @@ def looper():
             print(each_status)
             if (config.logger_on):
                 logger(each_status)
-        wait()
+        config.load_config()
+        wait(config.interval)
 
+#
 def start_conditions_met():
     global config
     if (active_count() > 1):
@@ -191,20 +142,16 @@ def start_conditions_met():
     if (len(config.servers) == 0):
         print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. ")
         return False
-    if not(servers_are_valid(config)):
-        print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
-        return False
+    for each_server in config.servers:
+        if not(server_is_valid(each_server['url'])):
+            print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
+            return False
     return True
-
-def name_moderator():
-    global config
-    if (config.name_moderator_on == False):
-        return
-    process = Thread(target=name_filter)
-    process.start()
 
 #start application
 def start():
+    global config
+    config.load_config()
     if not (start_conditions_met()):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
@@ -228,13 +175,15 @@ def stop():
         currently_online_list[each_server['url']] = []
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
+
 def init():
     global config
     global continue_condition
     global currently_online_list
     global target_reached
     config = Config()
-    config.config_handler()
+    config.load_config()
+    config.print_values()
     continue_condition = True
     currently_online_list = {}
     target_reached = {}
@@ -245,6 +194,7 @@ def init():
 #main user input command line interface for application
 def main():
     global currently_online_list
+    global config
     print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     while True:
         print (f"{Colour().default} -------------------------")
@@ -281,15 +231,12 @@ def main():
                 toggle_logger()
             case "logall":
                 toggle_all_players()
-            case "alt":
-                toggle_alt_checker()
-            case "addalt":
-                config.add_alt_links()
-            case "delalt":
-                config.del_alt_links()
+            case "reload":
+                config.load_config()
+                config.print_values()
             case "newlog":
                 refresh_log()
-            case "fresh":
+            case "newconfig":
                 config.start_new()
             case "start":
                 start()
