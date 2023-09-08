@@ -45,6 +45,11 @@ python3 pinger.py
 
 - Type and enter 'help' to see full list of commands
 
+**Example config.json file:**
+ ![config example]([https://iili.io/6Jdw5g.png](https://i.ibb.co/B3pD02q/Screenshot-2023-09-02-113850.png))
+
+
+
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
 Telling me how trash the code is is also welcome
