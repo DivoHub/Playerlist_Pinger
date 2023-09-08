@@ -29,6 +29,7 @@ def get_online_list(server_object):
         return_list.append(each_player.name)
     return return_list
 
+
 #return an int with the number of players online on server
 def get_player_count(server_object):
     return server_object.players.online

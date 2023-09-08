@@ -25,6 +25,7 @@ def login_check_all(online_list, server):
             login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
     return login_list
 
+
 #log players in config who log on to server
 def login_check(online_list, server):
     global config
@@ -82,7 +83,7 @@ def target_check(server, player_count):
         target_reached[server['url']] = False
 
 #checks for newly joined players and players who have logged
-def checker():
+def checker(error_counter):
     global config
     log_list = []
     for each_server in config.servers:
@@ -112,8 +113,16 @@ def wait(interval):
 def looper():
     global config
     global continue_condition
+    error_count = 0
     while continue_condition:
         status_log = checker()
+        if (status_log == "error"):
+            error_count = print_connection_error(error_count)
+            wait()
+            continue
+        if (error_count > 1 and status_log != "error"):
+            print (f"{Colour().success}Connection reestablished. Total time disconnected: {error_count * config.interval} seconds{Colour().default}")
+            error_count = 0
         for each_status in status_log:
             print(each_status)
             if (config.logger_on):
