@@ -2,7 +2,7 @@ from colour import Colour
 from config import update_config
 
 #turn off and on logger module.
-def toggle_logger():
+def toggle_logger(config):
     global config
     if (config.logger_on):
         config.logger_on = False

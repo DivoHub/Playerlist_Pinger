@@ -3,7 +3,6 @@ from datetime import datetime
 from time import sleep
 from utils import *
 
-
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush():
     global currently_online_list
@@ -11,31 +10,19 @@ def currently_online_flush():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
-#check if server size has reached specified target number
-def target_check(player_count, server):
-    global config
-    if (server['target'] == 0):
-        return
-    global target_reached
-    if (player_count >= server['target'] and target_reached[server['url']] is False):
-        target_reached[server['url']] = True
-        play_sound("chime.wav")
-        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
-    elif (player_count < server['target'] and target_reached[server['url']] is True):
-        target_reached[server['url']] = False
-
 #log all players that log on to server
 def login_check_all(online_list, server):
     global currently_online_list
     login_list = []
     for each_player in online_list:
-        if (each_player not in currently_online_list[server]):
-            currently_online_list[server].append(each_player)
-            if (each_player in config.players):
-                play_sound("login.wav")
-                login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-            else:
-                login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
+        if (each_player in currently_online_list[server]):
+            continue
+        currently_online_list[server].append(each_player)
+        if (each_player in config.players):
+            play_sound("login.wav")
+            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        else:
+            login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
     return login_list
 
 #log players in config who log on to server
@@ -45,10 +32,11 @@ def login_check(online_list, server):
     found_list = list(set(config.players).intersection(online_list))
     login_list = []
     for each_player in found_list:
-        if (each_player not in currently_online_list[server]):
-            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-            currently_online_list[server].append(each_player)
-            play_sound("login.wav")
+        if (each_player in currently_online_list[server]):
+            continue
+        login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        currently_online_list[server].append(each_player)
+        play_sound("login.wav")
     return login_list
 
 #log players that log out
@@ -81,23 +69,37 @@ def quick_check():
                 print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
     play_sound(str("chime.wav"))
 
+#check if server size has reached specified target number
+def target_check(server, player_count):
+    if (server['target'] == 0):
+        return
+    global target_reached
+    if (player_count >= server['target'] and target_reached[server['url']] is False):
+        target_reached[server['url']] = True
+        play_sound("chime.wav")
+        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+    elif (player_count < server['target'] and target_reached[server['url']] is True):
+        target_reached[server['url']] = False
+
 #checks for newly joined players and players who have logged
 def checker():
     global config
     log_list = []
     for each_server in config.servers:
-            server_object = get_server_object(each_server.url)
-            online_list = get_online_list(server_object)
-        if (online_list == False):
-            break
+        server_object = get_server_object(each_server.url)
+        online_list = get_online_list(server_object)
+        player_count = get_player_count(server_object)
+        if (online_list == None):
+            continue
         if (config.logall_on):
             log_list.extend(login_check_all(online_list, each_server['url']))
         else:
             log_list.extend(login_check(online_list, each_server['url']))
         log_list.extend(logout_check(online_list, each_server['url']))
-        target_check(len(online_list), each_server)
-    return log_list
+        target_check(each_server, player_count)
+        return log_list
 
+#looper thread sleeps for configured time
 def wait(interval):
     global continue_condition
     for timer in range(interval):
@@ -106,7 +108,7 @@ def wait(interval):
         else:
             break
 
-# iterative function, continues if user has not stopped
+#iterative function, continues if user has not stopped
 def looper():
     global config
     global continue_condition
@@ -119,6 +121,7 @@ def looper():
         config.load_config()
         wait(config.interval)
 
+#
 def start_conditions_met():
     global config
     if (active_count() > 1):
@@ -130,9 +133,10 @@ def start_conditions_met():
     if (len(config.servers) == 0):
         print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. ")
         return False
-    if not(servers_are_valid(config)):
-        print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
-        return False
+    for each_server in config.servers:
+        if not(server_is_valid(each_server['url'])):
+            print (f"{Colour().error} Invalid server error...\n check configurations or connection, and try again.{Colour().default}")
+            return False
     return True
 
 #start application
