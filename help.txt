@@ -27,7 +27,7 @@ interval
 target
     -change the size of online players in given server list to ping user for (default value is 0, 0 is off)
 
-fresh
+newconfig
     -reinitialize, and create new config file. First time users enter this command to start
 
 config
@@ -46,9 +46,6 @@ stop
 exit
     -exit application
 
-web
-    -Each website can have downtime, or can run into some issues. Use this command to choose between different websites and select the one that is working.
-
 logall
     -Print and log all players who log onto the server (no notification sound if player not on checking list)
 
@@ -57,6 +54,9 @@ logger
 
 newlog
     -start a new log file
+
+reload
+    -reloads the config.json file
 
 online
     -print current list of players online
