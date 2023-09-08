@@ -3,12 +3,7 @@
 Simple console application that pings user and logs when any specified players appear online in a given server IP (Java Edition)
 
 ## Overview
-Makes periodic GET requests to minecraft statistic sites to fetch player list data on given server.
-
-Websites include:
-- minecraft-statistic.net
-- minecraftlist.com
-- mcsrvstat.us
+This application utilizes the ***mcstatus*** library to incrementally fetch server data on the user's behalf.
 
 ## Dependencies
 
@@ -23,17 +18,19 @@ Websites include:
   - License: Apache License 2.0
   - [GitHub Repository](https://github.com/py-mine/mcstatus)
 
-```bash
-pip install simpleaudio
-pip install mcstatus
-```
 
 ## Usage
 1. Clone Repo or download/unzip folder onto local machine
 
 2. Install dependencies using PIP
 
-3. Open terminal from repository folder then run the following command:
+```bash
+pip install simpleaudio
+pip install mcstatus
+```
+
+
+4. Open terminal from repository folder then run the following command:
 ```bash
 python pinger.py
 ```

@@ -1,0 +1,4 @@
+asyncio-dgram==2.1.2
+dnspython==2.4.2
+mcstatus==11.0.1
+simpleaudio==1.0.4
