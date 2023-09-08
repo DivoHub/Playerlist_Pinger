@@ -22,6 +22,8 @@ def get_online_list(server_object):
         return None
     except IndexError:
         return None
+    if (len(playerlist) == 0):
+        return None
     return_list = []
     for each_player in playerlist:
         return_list.append(each_player.name)

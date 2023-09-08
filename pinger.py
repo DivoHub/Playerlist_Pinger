@@ -70,16 +70,15 @@ def logout_check(online_list, server):
 def quick_check():
     global config
     for each_server in config.servers:
-
-        online_list = get_online_list(each_server.url)
+        server_object = get_server_object(each_server.url)
+        online_list = get_online_list(server_object)
         if (online_list == None):
             return
-        else:
-            for each_player in online_list:
-                if (each_player in config.players):
-                    print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
-                else:
-                    print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
+        for each_player in online_list:
+            if (each_player in config.players):
+                print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
+            else:
+                print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
     play_sound(str("chime.wav"))
 
 #checks for newly joined players and players who have logged
@@ -87,10 +86,8 @@ def checker():
     global config
     log_list = []
     for each_server in config.servers:
-        if (config.alt_checker_on):
-            online_list = get_online_list_alt(each_server['alt_link'], each_server['url'])
-        else:
-            online_list = get_online_list(each_server['url'])
+            server_object = get_server_object(each_server.url)
+            online_list = get_online_list(server_object)
         if (online_list == False):
             break
         if (config.logall_on):
