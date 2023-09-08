@@ -82,7 +82,7 @@ def logout_check(online_list, server):
 def quick_check():
     global config
     for each_server in config.servers:
-        server_object = get_server_object(each_server.url)
+        server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
         if (online_list == None):
             return
