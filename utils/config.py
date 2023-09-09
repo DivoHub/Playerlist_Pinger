@@ -139,10 +139,10 @@ class Config:
 
     #change server ip to be checked
     def add_server(self):
-        new_server = Server()
         user_input = input(f"{Colour().default} Enter Server IP (enter 'x' to cancel):   ")
         if (user_input.casefold() == 'x'):
             return None
+        new_server = Server()
         new_server.url = user_input
         self.servers.append(new_server.__dict__)
         update_config(self.__dict__)
@@ -156,13 +156,13 @@ class Config:
         elif (len(self.servers) == 1):
             deleted_server = self.servers.pop()
             update_config(self.__dict__)
-            return deleted_server
+            return deleted_server['url']
         self.server_index_printer()
         deletion_index = input(f"{Colour().default} Enter index (number) of server to delete (enter 'x' to cancel):")
         if (deletion_index== "x"):
             return None
         try:
-            deleted_server = self.servers.pop(int(deletion_index))
+            deleted_server = self.servers.pop(int(deletion_index))['url']
         except ValueError:
             print (f"{Colour().error}Invalid Entry.{Colour().default}")
         except IndexError:
@@ -174,7 +174,7 @@ class Config:
     #change interval between each GET request
     def change_interval(self):
             try:
-                self.interval = int(input(f"{Colour().default} Enter an interval in seconds between each fetch (Anything over 30 is ill-advised.)")) #default all
+                self.interval = int(input(f"{Colour().default} Enter an interval in seconds between each fetch (Anything lower than 10 seconds is not recommended:  )"))
             except ValueError:
                 print (f"{Colour().error} Input Error {Colour().default}")
             else:
