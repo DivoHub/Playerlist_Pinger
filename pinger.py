@@ -4,15 +4,13 @@ from time import sleep
 from utils import *
 
 #flushes the online list of all players who are not listed in config.json
-def currently_online_flush():
+def currently_online_flush(config):
     global currently_online_list
-    global config
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
 #turn off and on logger module.
-def toggle_logger():
-    global config
+def toggle_logger(config):
     if (config.logger_on):
         config.logger_on = False
         print (f"{Colour().red} Logger turned off.{Colour().default}")
@@ -22,8 +20,7 @@ def toggle_logger():
     update_config(config.__dict__)
 
 #Toggle between logging all player traffic, and logging specified player traffic
-def toggle_all_players():
-    global config
+def toggle_all_players(config):
     if (config.logall_on):
         config.logall_on = False
         currently_online_flush()
@@ -50,8 +47,7 @@ def login_check_all(online_list, server):
 
 
 #log players in config who log on to server
-def login_check(online_list, server):
-    global config
+def login_check(online_list, server, config):
     global currently_online_list
     found_list = list(set(config.players).intersection(online_list))
     login_list = []
@@ -64,8 +60,7 @@ def login_check(online_list, server):
     return login_list
 
 #log players that log out
-def logout_check(online_list, server):
-    global config
+def logout_check(online_list, server, config):
     global currently_online_list
     logout_list = []
     for each_player in currently_online_list[server]:
@@ -79,13 +74,13 @@ def logout_check(online_list, server):
     return logout_list
 
 # quick command function that displays to users all online players in config servers
-def quick_check():
-    global config
+def quick_check(config):
     for each_server in config.servers:
         server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
         if (online_list == None):
             return
+        print(f"{get_player_count(server_object)} Players online.")
         for each_player in online_list:
             if (each_player in config.players):
                 print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
@@ -106,8 +101,7 @@ def target_check(server, player_count):
         target_reached[server['url']] = False
 
 #checks for newly joined players and players who have logged
-def checker():
-    global config
+def checker(config):
     log_list = []
     for each_server in config.servers:
         server_object = get_server_object(each_server["url"])
@@ -133,8 +127,7 @@ def wait(interval):
             break
 
 #iterative function, continues if user has not stopped
-def looper():
-    global config
+def looper(config):
     global continue_condition
     error_count = 0
     while continue_condition:
@@ -151,8 +144,7 @@ def looper():
         wait(config.interval)
 
 #checks if checker is already running, and verifies the validity of config.json file
-def start_conditions_met():
-    global config
+def start_conditions_met(config):
     if (active_count() > 1):
         print(f"{Colour().error} Checker already running.{Colour().default}")
         return False
@@ -171,8 +163,7 @@ def start_conditions_met():
     return True
 
 #start application
-def start():
-    global config
+def start(config):
     config.load_config()
     if not (start_conditions_met()):
         return
@@ -184,8 +175,7 @@ def start():
     print (f"{Colour().green} Checker started. {Colour().default}")
 
 #stop application
-def stop():
-    global config
+def stop(config):
     if (active_count() == 1):
         print (f"{Colour().default} Checker not running.")
         return
@@ -199,7 +189,7 @@ def stop():
 
 #initializes variables before application runs
 def init():
-    global config
+    print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     global continue_condition
     global currently_online_list
     global target_reached
@@ -212,12 +202,12 @@ def init():
     for each_server in config.servers:
         currently_online_list[each_server['url']] = []
         target_reached[each_server['url']] = False
+    return config
+
 
 #main user input command line interface for application
-def main():
+def main(config):
     global currently_online_list
-    global config
-    print(f"Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
     while True:
         print (f"{Colour().default} -------------------------")
         user_input = input()
@@ -244,15 +234,15 @@ def main():
             case "interval":
                 config.change_interval()
             case "online":
-                quick_check()
+                quick_check(config)
             case "target":
                 config.change_target()
             case "config":
                 config.print_values()
             case "logger":
-                toggle_logger()
+                toggle_logger(config)
             case "logall":
-                toggle_all_players()
+                toggle_all_players(config)
             case "reload":
                 config.load_config()
                 config.print_values()
@@ -261,14 +251,13 @@ def main():
             case "newconfig":
                 config.start_new()
             case "start":
-                start()
+                start(config)
             case "stop":
-                stop()
+                stop(config)
             case "help":
                 print_manual()
             case _:
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
-    init()
-    main()
+    main(init())
