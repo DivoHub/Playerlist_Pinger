@@ -97,8 +97,8 @@ class Config:
     #append new players to players list
     def add_player(self):
         while True:
-            new_player = input(f"{Colour().default} Enter player name (enter 'x' when finished):    ")
-            if (new_player.casefold() == "x"):
+            new_player = input(f"{Colour().default} Enter player name (Leave blank and press enter when finished):    ")
+            if (new_player.casefold() == ""):
                 break
             elif (new_player in self.players):
                 print (f"{Colour().warning} Player is already on list. {Colour().default}")
@@ -139,8 +139,8 @@ class Config:
 
     #change server ip to be checked
     def add_server(self):
-        user_input = input(f"{Colour().default} Enter Server IP (enter 'x' to cancel):   ")
-        if (user_input.casefold() == 'x'):
+        user_input = input(f"{Colour().default} Enter Server IP (Leave blank and press enter to cancel):   ")
+        if (user_input.casefold() == ''):
             return None
         new_server = Server()
         new_server.url = user_input

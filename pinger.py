@@ -31,7 +31,7 @@ def toggle_all_players(config):
     update_config(config.__dict__)
 
 #log all players that log on to server
-def login_check_all(online_list, server):
+def login_check_all(online_list, server, config):
     global currently_online_list
     login_list = []
     for each_player in online_list:
@@ -80,7 +80,7 @@ def quick_check(config):
         online_list = get_online_list(server_object)
         if (online_list == None):
             return
-        print(f"{get_player_count(server_object)} Players online.")
+        print(f"{Colour().blue}  [ {get_player_count(server_object)} ] Players online. {Colour().default}")
         for each_player in online_list:
             if (each_player in config.players):
                 print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
@@ -89,7 +89,7 @@ def quick_check(config):
     play_sound(str("chime.wav"))
 
 #check if server size has reached specified target number
-def target_check(server, player_count):
+def target_check(server, player_count, config):
     if (server['target'] == 0):
         return
     global target_reached
@@ -109,12 +109,12 @@ def checker(config):
         if (online_list == None):
             return None
         if (config.logall_on):
-            log_list.extend(login_check_all(online_list, each_server['url']))
+            log_list.extend(login_check_all(online_list, each_server['url'], config))
         else:
-            log_list.extend(login_check(online_list, each_server['url']))
-        log_list.extend(logout_check(online_list, each_server['url']))
+            log_list.extend(login_check(online_list, each_server['url'], config))
+        log_list.extend(logout_check(online_list, each_server['url'], config))
         player_count = get_player_count(server_object)
-        target_check(each_server, player_count)
+        target_check(each_server, player_count, config)
         return log_list
 
 #looper thread sleeps for configured time
@@ -132,7 +132,7 @@ def looper(config):
     error_count = 0
     while continue_condition:
         config.load_config()
-        status_log = checker()
+        status_log = checker(config)
         error_count = error_handler(error_count, status_log, config.interval)
         if (status_log == None):
             wait(config.interval)
@@ -165,12 +165,12 @@ def start_conditions_met(config):
 #start application
 def start(config):
     config.load_config()
-    if not (start_conditions_met()):
+    if not (start_conditions_met(config)):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
     global continue_condition
     continue_condition = True
-    process = Thread(target=looper)
+    process = Thread(target=lambda: looper(config))
     process.start()
     print (f"{Colour().green} Checker started. {Colour().default}")
 
@@ -260,4 +260,5 @@ def main(config):
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
-    main(init())
+    config = init()
+    main(config)
