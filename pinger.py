@@ -89,14 +89,14 @@ def quick_check(config):
     play_sound(str("chime.wav"))
 
 #check if server size has reached specified target number
-def target_check(server, player_count, config):
+def target_check(server, player_count):
     if (server['target'] == 0):
         return
     global target_reached
     if (player_count >= server['target'] and target_reached[server['url']] is False):
         target_reached[server['url']] = True
         play_sound("chime.wav")
-        print (f"{Colour().blue} {server} has hit {config.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"{Colour().blue} {server} has hit {server.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
@@ -114,7 +114,7 @@ def checker(config):
             log_list.extend(login_check(online_list, each_server['url'], config))
         log_list.extend(logout_check(online_list, each_server['url'], config))
         player_count = get_player_count(server_object)
-        target_check(each_server, player_count, config)
+        target_check(each_server, player_count)
         return log_list
 
 #looper thread sleeps for configured time

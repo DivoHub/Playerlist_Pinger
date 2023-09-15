@@ -134,6 +134,8 @@ class Config:
             self.servers[server_index]['target'] = int(input(f"{Colour().default}Enter number target for {self.servers[server_index]['url']}:    "))
         except ValueError:
             print(f"{Colour().error} Invalid input given. {Colour().default}")
+        except IndexError:
+            print(f"{Colour().error} Index is out of range. {Colour().default}")
         else:
             update_config(self.__dict__)
 
