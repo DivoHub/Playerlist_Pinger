@@ -216,7 +216,7 @@ def main(config):
             case "":
                 print(f"{Colour().default}\n")
             case "exit":
-                stop()
+                stop(config)
                 print(f"{Colour().red} Program exiting. {Colour().default}")
                 break
             case "addplayer":

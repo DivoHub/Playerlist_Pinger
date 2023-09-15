@@ -85,8 +85,8 @@ class Config:
             update_config(self.__dict__)
             return
         while True:
-            del_player = input(f"{Colour().default} Enter player name (case sensitive) enter 'x' when finished:    ")
-            if (del_player.casefold() == "x"):
+            del_player = input(f"{Colour().default} Enter player name (case sensitive) Leave blank and press enter when finished:    ")
+            if (del_player.casefold() == ""):
                 break
             elif (del_player in self.players):
                 self.players.remove(del_player)
@@ -174,7 +174,7 @@ class Config:
     #change interval between each GET request
     def change_interval(self):
             try:
-                self.interval = int(input(f"{Colour().default} Enter an interval in seconds between each fetch (Anything lower than 10 seconds is not recommended:  )"))
+                self.interval = int(input(f"{Colour().default} Enter an interval in seconds between each fetch (Anything lower than 10 seconds is not recommended):  "))
             except ValueError:
                 print (f"{Colour().error} Input Error {Colour().default}")
             else:
