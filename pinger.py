@@ -96,7 +96,7 @@ def target_check(server, player_count):
     if (player_count >= server['target'] and target_reached[server['url']] is False):
         target_reached[server['url']] = True
         play_sound("chime.wav")
-        print (f"{Colour().blue} {server} has hit {server.target} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"{Colour().blue} {server} has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
