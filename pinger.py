@@ -9,26 +9,7 @@ def currently_online_flush(config):
     for each_server in config.servers:
         currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
 
-#turn off and on logger module.
-def toggle_logger(config):
-    if (config.logger_on):
-        config.logger_on = False
-        print (f"{Colour().red} Logger turned off.{Colour().default}")
-    else:
-        config.logger_on = True
-        print (f"{Colour().green} logger turned on.{Colour().default}")
-    update_config(config.__dict__)
 
-#Toggle between logging all player traffic, and logging specified player traffic
-def toggle_all_players(config):
-    if (config.logall_on):
-        config.logall_on = False
-        currently_online_flush()
-        print (f"{Colour().red} Log All Players Off.{Colour().default}")
-    else:
-        config.logall_on = True
-        print (f"{Colour().green} Log All Players On.{Colour().default}")
-    update_config(config.__dict__)
 
 #log all players that log on to server
 def login_check_all(online_list, server, config):
@@ -96,7 +77,7 @@ def target_check(server, player_count):
     if (player_count >= server['target'] and target_reached[server['url']] is False):
         target_reached[server['url']] = True
         play_sound("chime.wav")
-        print (f"{Colour().blue} {server} has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"{Colour().blue}[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and target_reached[server['url']] is True):
         target_reached[server['url']] = False
 
