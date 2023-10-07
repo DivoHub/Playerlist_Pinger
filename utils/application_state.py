@@ -10,7 +10,8 @@ class ApplicationState:
     def initialize(self):
         self.continuing = False
         self.currently_online = False
-        self.target_reached = False
+        self.target_reached = {}
+        self.currently_online_list = {}
 
     def toggle_continue(self):
         if (self.continuing):
@@ -24,9 +25,14 @@ class ApplicationState:
         else:
             self.currently_online = True
 
-    def toggle_target_reached(self):
-        if (self.target_reached):
-            self.target_reached = False
+    def toggle_target_reached(self, server):
+        if (self.target_reached[server]):
+            self.target_reached[server] = False
         else:
-            self.target_reached = True
+            self.target_reached[server] = True
 
+    def append_current_list(self, server, player):
+        self.currently_online_list[server].append(player)
+
+    def remove_current_list(self, server, player):
+        self.currently_online_list[server].remove(player)

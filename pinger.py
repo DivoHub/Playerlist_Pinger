@@ -109,7 +109,7 @@ def wait(interval):
 
 #iterative function, continues if user has not stopped
 def looper(config):
-    global continue_condition
+
     error_count = 0
     while continue_condition:
         config.load_config()
@@ -171,24 +171,19 @@ def stop(config):
 #initializes variables before application runs
 def init():
     print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
-    global continue_condition
-    global currently_online_list
-    global target_reached
     config = Config()
     config.load_config()
     config.print_values()
-    continue_condition = True
-    currently_online_list = {}
-    target_reached = {}
-    for each_server in config.servers:
-        currently_online_list[each_server['url']] = []
-        target_reached[each_server['url']] = False
-    return config
+    app_state.continuing = True
 
+    return config
 
 #main user input command line interface for application
 def main(config):
-    global currently_online_list
+    for each_server in config.servers:
+        currently_online_list[each_server['url']] = []
+        app_state.toggle_target_reached(each_server['url'])
+
     while True:
         print (f"{Colour().default} -------------------------")
         user_input = input()
@@ -207,7 +202,7 @@ def main(config):
             case "addserver":
                 added_server = config.add_server()
                 if (added_server != None and server_is_valid(added_server)):
-                    currently_online_list[added_server] = []
+                    app_state = currently_online_list[added_server] = []
             case "delserver":
                 deleted_server = config.delete_server()
                 if (deleted_server != None):
@@ -242,4 +237,6 @@ def main(config):
 
 if __name__ == '__main__':
     config = init()
+    app_state = ApplicationState()
+    app_state.initialize()
     main(config)
