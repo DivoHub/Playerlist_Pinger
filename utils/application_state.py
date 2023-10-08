@@ -1,3 +1,7 @@
+from datetime import datetime
+from .colour import Colour
+
+
 class ApplicationState:
     _instance = None
 
@@ -12,6 +16,7 @@ class ApplicationState:
         self.currently_online = False
         self.target_reached = {}
         self.currently_online_list = {}
+        self.error_count = 0
 
     def toggle_continue(self):
         if (self.continuing):
@@ -36,3 +41,27 @@ class ApplicationState:
 
     def remove_current_list(self, server, player):
         self.currently_online_list[server].remove(player)
+
+    def reset_current_list(self, server):
+        self.currently_online_list[server] = []
+
+    def delete_current_list(self, server):
+        del self.currently_online_list[server]
+
+    def add_current_list(self, server):
+        self.currently_online_list[server] = []
+
+    def error_handler(self, status_log, interval):
+        if (status_log != None and self.error_count == 0):
+            self.error_count = 0
+        elif (status_log != None and self.error_count > 0):
+            print(f"{Colour().success}Connection reestablished. Total time disconnected: {self.error_count * interval} seconds{Colour().default}")
+            self.error_count = 0
+        elif (status_log == None and self.error_count < 3):
+            print(f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
+            self.error_count += 1
+        elif (status_log == None and self.error_count == 3):
+            print(f"{Colour().error} Connection error persisting... Check connection {Colour().default}")
+            self.error_count += 1
+        else:
+            self.error_count += 1

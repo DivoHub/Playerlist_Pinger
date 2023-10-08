@@ -60,5 +60,4 @@ Telling me how trash the code is is also welcome
 
 
 ## Issues
-- Existence of Global Variables
 - No UI

@@ -5,20 +5,16 @@ from utils import *
 
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush(config):
-    global currently_online_list
     for each_server in config.servers:
-        currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, currently_online_list[each_server['url']]))
-
-
+        state.currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, state.currently_online_list[each_server['url']]))
 
 #log all players that log on to server
 def login_check_all(online_list, server, config):
-    global currently_online_list
     login_list = []
     for each_player in online_list:
-        if (each_player in currently_online_list[server]):
+        if (each_player in state.currently_online_list[server]):
             continue
-        currently_online_list[server].append(each_player)
+        state.append_current_list(server, each_player)
         if (each_player in config.players):
             play_sound("login.wav")
             login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
@@ -29,24 +25,22 @@ def login_check_all(online_list, server, config):
 
 #log players in config who log on to server
 def login_check(online_list, server, config):
-    global currently_online_list
     found_list = list(set(config.players).intersection(online_list))
     login_list = []
     for each_player in found_list:
-        if (each_player in currently_online_list[server]):
+        if (each_player in state.currently_online_list[server]):
             continue
         login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-        currently_online_list[server].append(each_player)
+        state.append_current_list(server, each_player)
         play_sound("login.wav")
     return login_list
 
 #log players that log out
 def logout_check(online_list, server, config):
-    global currently_online_list
     logout_list = []
-    for each_player in currently_online_list[server]:
+    for each_player in state.currently_online_list[server]:
         if (each_player not in online_list):
-            currently_online_list[server].remove(each_player)
+            state.remove_current_list(server, each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
                 logout_list.append(f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
@@ -67,19 +61,17 @@ def quick_check(config):
                 print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
             else:
                 print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
-    play_sound(str("chime.wav"))
 
 #check if server size has reached specified target number
 def target_check(server, player_count):
     if (server['target'] == 0):
         return
-    global target_reached
-    if (player_count >= server['target'] and target_reached[server['url']] is False):
-        target_reached[server['url']] = True
+    if (player_count >= server['target'] and state.target_reached[server['url']] is False):
+        state.target_reached[server['url']] = True
         play_sound("chime.wav")
         print (f"{Colour().blue}[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
-    elif (player_count < server['target'] and target_reached[server['url']] is True):
-        target_reached[server['url']] = False
+    elif (player_count < server['target'] and state.target_reached[server['url']] is True):
+        state.target_reached[server['url']] = False
 
 #checks for newly joined players and players who have logged
 def checker(config):
@@ -100,21 +92,19 @@ def checker(config):
 
 #looper thread sleeps for configured time
 def wait(interval):
-    global continue_condition
     for timer in range(interval):
-        if continue_condition:
+        if state.continuing:
             sleep(1)
         else:
             break
 
 #iterative function, continues if user has not stopped
 def looper(config):
-
-    error_count = 0
-    while continue_condition:
+    state.error_count = 0
+    while state.continuing:
         config.load_config()
         status_log = checker(config)
-        error_count = error_handler(error_count, status_log, config.interval)
+        state.error_handler(status_log, config.interval)
         if (status_log == None):
             wait(config.interval)
             continue
@@ -149,8 +139,7 @@ def start(config):
     if not (start_conditions_met(config)):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
-    global continue_condition
-    continue_condition = True
+    state.continuing = True
     process = Thread(target=lambda: looper(config))
     process.start()
     print (f"{Colour().green} Checker started. {Colour().default}")
@@ -161,11 +150,9 @@ def stop(config):
         print (f"{Colour().default} Checker not running.")
         return
     print (f"{Colour().red} Stopping checker...\n {Colour().default}")
-    global continue_condition
-    global currently_online_list
-    continue_condition = False
+    state.continuing = False
     for each_server in config.servers:
-        currently_online_list[each_server['url']] = []
+        state.reset_current_list(each_server)
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
 #initializes variables before application runs
@@ -174,16 +161,10 @@ def init():
     config = Config()
     config.load_config()
     config.print_values()
-    app_state.continuing = True
-
     return config
 
 #main user input command line interface for application
 def main(config):
-    for each_server in config.servers:
-        currently_online_list[each_server['url']] = []
-        app_state.toggle_target_reached(each_server['url'])
-
     while True:
         print (f"{Colour().default} -------------------------")
         user_input = input()
@@ -201,12 +182,14 @@ def main(config):
                 config.delete_player()
             case "addserver":
                 added_server = config.add_server()
-                if (added_server != None and server_is_valid(added_server)):
-                    app_state = currently_online_list[added_server] = []
+                if (added_server == None):
+                    continue
+                state.add_current_list(added_server)
             case "delserver":
                 deleted_server = config.delete_server()
-                if (deleted_server != None):
-                    del currently_online_list[deleted_server]
+                if (deleted_server == None):
+                    continue
+                state.delete_current_list(deleted_server)
             case "interval":
                 config.change_interval()
             case "online":
@@ -236,7 +219,9 @@ def main(config):
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
+    state = ApplicationState()
+    state.initialize()
+    for each_server in config.servers:
+        state.reset_current_list(each_server)
     config = init()
-    app_state = ApplicationState()
-    app_state.initialize()
     main(config)
