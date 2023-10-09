@@ -9,7 +9,7 @@ class ApplicationState:
         if cls._instance is None:
             cls._instance = super(ApplicationState, cls).__new__(cls)
             cls._instance.initialize()
-        return cls
+        return cls._instance
 
     def initialize(self):
         self.continuing = False

@@ -155,14 +155,6 @@ def stop(config):
         state.reset_current_list(each_server)
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
-#initializes variables before application runs
-def init():
-    print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
-    config = Config()
-    config.load_config()
-    config.print_values()
-    return config
-
 #main user input command line interface for application
 def main(config):
     while True:
@@ -219,9 +211,12 @@ def main(config):
                 print (f"{Colour().error} Unknown command. {Colour().default}")
 
 if __name__ == '__main__':
+    print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
+    config = Config()
+    config.load_config()
+    config.print_values()
     state = ApplicationState()
     state.initialize()
     for each_server in config.servers:
-        state.reset_current_list(each_server)
-    config = init()
+        state.reset_current_list(each_server["url"])
     main(config)
