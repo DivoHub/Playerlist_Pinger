@@ -139,7 +139,7 @@ def start(config):
     if not (start_conditions_met(config)):
         return
     print (f"{Colour().green} Starting checker... {Colour().default}")
-    state.continuing = True
+    state.toggle_continue()
     process = Thread(target=lambda: looper(config))
     process.start()
     print (f"{Colour().green} Checker started. {Colour().default}")
@@ -150,7 +150,7 @@ def stop(config):
         print (f"{Colour().default} Checker not running.")
         return
     print (f"{Colour().red} Stopping checker...\n {Colour().default}")
-    state.continuing = False
+    state.toggle_continue()
     for each_server in config.servers:
         state.reset_current_list(each_server)
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")

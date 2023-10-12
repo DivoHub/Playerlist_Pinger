@@ -24,12 +24,6 @@ class ApplicationState:
         else:
             self.continuing = True
 
-    def toggle_currently_online(self):
-        if (self.currently_online):
-            self.currently_online = False
-        else:
-            self.currently_online = True
-
     def toggle_target_reached(self, server):
         if (self.target_reached[server]):
             self.target_reached[server] = False
