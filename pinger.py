@@ -6,7 +6,7 @@ from utils import *
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush(config):
     for each_server in config.servers:
-        state.currently_online_list[each_server['url']] = list(filter(lambda player: player in config.players, state.currently_online_list[each_server['url']]))
+        state.currently_online_list[each_server["url"]] = list(filter(lambda player: player in config.players, state.currently_online_list[each_server["url"]]))
 
 #log all players that log on to server
 def login_check_all(online_list, server, config):
@@ -66,12 +66,12 @@ def quick_check(config):
 def target_check(server, player_count):
     if (server['target'] == 0):
         return
-    if (player_count >= server['target'] and state.target_reached[server['url']] is False):
-        state.target_reached[server['url']] = True
+    if (player_count >= server['target'] and state.target_reached[server["url"]] is False):
+        state.target_reached[server["url"]] = True
         play_sound("chime.wav")
         print (f"{Colour().blue}[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
-    elif (player_count < server['target'] and state.target_reached[server['url']] is True):
-        state.target_reached[server['url']] = False
+    elif (player_count < server['target'] and state.target_reached[server["url"]] is True):
+        state.target_reached[server["url"]] = False
 
 #checks for newly joined players and players who have logged
 def checker(config):
@@ -82,10 +82,10 @@ def checker(config):
         if (online_list == None):
             return None
         if (config.logall_on):
-            log_list.extend(login_check_all(online_list, each_server['url'], config))
+            log_list.extend(login_check_all(online_list, each_server["url"], config))
         else:
-            log_list.extend(login_check(online_list, each_server['url'], config))
-        log_list.extend(logout_check(online_list, each_server['url'], config))
+            log_list.extend(login_check(online_list, each_server["url"], config))
+        log_list.extend(logout_check(online_list, each_server["url"], config))
         player_count = get_player_count(server_object)
         target_check(each_server, player_count)
         return log_list
@@ -129,7 +129,7 @@ def start_conditions_met(config):
         print (f"{Colour().error} No internet connection. Check connection before starting.{Colour().default}")
         return False
     for each_server in config.servers:
-        if not(server_is_valid(each_server['url'])):
+        if not(server_is_valid(each_server["url"])):
             return False
     return True
 
@@ -219,4 +219,5 @@ if __name__ == '__main__':
     state.initialize()
     for each_server in config.servers:
         state.reset_current_list(each_server["url"])
+        state.target_reached[each_server["url"]] = []
     main(config)
