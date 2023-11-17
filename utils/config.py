@@ -2,6 +2,7 @@ from json import load
 from utils.server import Server
 from .files import create_config, update_config
 from .colour import Colour
+import logging
 
 class Config:
     def __init__(self):
@@ -22,6 +23,7 @@ class Config:
         if not (warning.casefold() == 'y'):
             return
         self.initialize()
+        logging.info("Config file overwritten.")
 
     # checks if config file given is valid
     def config_is_valid(self, json_object):
@@ -33,10 +35,10 @@ class Config:
             condition_list.append(type(json_object["interval"]) == int)
             condition_list.append(type(json_object["players"]) == list)
         except KeyError:
-            print (f"{Colour().error} Error loading keys from config.json file. \nCheck config.json file for validity issues {Colour().default}")
+            logging.error(f"{Colour().error} Error loading keys from config.json file. \nCheck config.json file for validity issues {Colour().default}")
             return False
         except Exception:
-            print (f"{Colour().error} Error occurred checking for config.json validity. {Colour().default}")
+            logging.error(f"{Colour().error} Error occurred checking for config.json validity. {Colour().default}")
             return False
         if (json_object["servers"]):
             condition_list.append(type(json_object["servers"][0]) == dict)
@@ -50,12 +52,12 @@ class Config:
             playerlist_file = open('./config.json', 'r')
             json_object = load(playerlist_file)
         except FileNotFoundError:
-            print (f"{Colour().error} No config.json file found. {Colour().default}")
+            logging.warning(f"{Colour().error} No config.json file found. {Colour().default}")
             create_config()
             self.initialize()
             return None
         except Exception:
-            print (f"{Colour().error} Error loading config.json file\nPlease fix any issues with config file before starting checker.{Colour().default}")
+            logging.error(f"{Colour().error} Error loading config.json file\nPlease fix any issues with config file before starting checker.{Colour().default}")
             self.__init__()
             return None
         else:

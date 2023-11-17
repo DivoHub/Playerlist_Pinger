@@ -1,6 +1,6 @@
 from datetime import datetime
 from .colour import Colour
-
+import logging
 
 class ApplicationState:
     _instance = None
@@ -50,12 +50,13 @@ class ApplicationState:
             self.error_count = 0
         elif (status_log != None and self.error_count > 0):
             print(f"{Colour().success}Connection reestablished. Total time disconnected: {self.error_count * interval} seconds{Colour().default}")
+            logging.info(f"{Colour().success}Connection reestablished. Total time disconnected: {self.error_count * interval} seconds{Colour().default}")
             self.error_count = 0
         elif (status_log == None and self.error_count < 3):
-            print(f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
+            logging.error(f"{Colour().error} Error making HTTP request at {datetime.now().strftime('%D  %H:%M:%S')} {Colour().default}")
             self.error_count += 1
         elif (status_log == None and self.error_count == 3):
-            print(f"{Colour().error} Connection error persisting... Check connection {Colour().default}")
+            logging.error(f"{Colour().error} Connection error persisting... Check connection {Colour().default}")
             self.error_count += 1
         else:
             self.error_count += 1

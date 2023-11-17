@@ -8,6 +8,7 @@ __pycache__/
 
 #log files
 log.txt
+errors.log
 
 #configs
 config.json

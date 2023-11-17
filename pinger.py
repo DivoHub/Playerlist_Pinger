@@ -2,6 +2,7 @@ from threading import Thread, active_count
 from datetime import datetime
 from time import sleep
 from utils import *
+import logging
 
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush(config):
@@ -212,6 +213,7 @@ def main(config):
 
 if __name__ == '__main__':
     print("Welcome to the Minecraft Java Edition Playerlist Pinger. Type 'help' to see list of commands.\n------------------------------------------- ")
+    logging.basicConfig(level=logging.INFO, filename="errors.log", filemode="a", format="%(asctime)s - %(levelname)s - %(message)s")
     config = Config()
     config.load_config()
     config.print_values()
