@@ -23,31 +23,40 @@ def login_check_all(online_list, server, config):
             login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
     return login_list
 
-
 #log players in config who log on to server
 def login_check(online_list, server, config):
     found_list = list(set(config.players).intersection(online_list))
-    login_list = []
     for each_player in found_list:
         if (each_player in state.currently_online_list[server]):
             continue
-        login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        yield f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
         state.append_current_list(server, each_player)
         play_sound("login.wav")
-    return login_list
+
+def login_check(online_list, server, config):
+    found_list = list(set(config.players).intersection(online_list))
+    for each_player in found_list:
+        if each_player not in state.currently_online_list[server]:
+
+def login_check(online_list, server, config):
+    found_list = list(set(config.players).intersection(online_list))
+    for each_player in found_list:
+        if each_player in (state.currently_online_list[server]):
+            continue
+        yield f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
+        state.append_current_list(server, each_player)
+        play_sound("login.wav")
 
 #log players that log out
 def logout_check(online_list, server, config):
-    logout_list = []
     for each_player in state.currently_online_list[server]:
         if (each_player not in online_list):
             state.remove_current_list(server, each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                logout_list.append(f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+                yield f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
             else:
-                logout_list.append(f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
-    return logout_list
+                yield f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}"
 
 # quick command function that displays to users all online players in config servers
 def quick_check(config):
@@ -76,20 +85,18 @@ def target_check(server, player_count):
 
 #checks for newly joined players and players who have logged
 def checker(config):
-    log_list = []
     for each_server in config.servers:
         server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
-        if (online_list == None):
-            return None
+        if (online_list is None):
+            return
         if (config.logall_on):
-            log_list.extend(login_check_all(online_list, each_server["url"], config))
+            yield from login_check_all(online_list, each_server["url"], config)
         else:
-            log_list.extend(login_check(online_list, each_server["url"], config))
-        log_list.extend(logout_check(online_list, each_server["url"], config))
+            yield from login_check(online_list, each_server["url"], config)
+        yield from logout_check(online_list, each_server["url"], config)
         player_count = get_player_count(server_object)
         target_check(each_server, player_count)
-        return log_list
 
 #looper thread sleeps for configured time
 def wait(interval):
