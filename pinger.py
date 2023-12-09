@@ -11,17 +11,14 @@ def currently_online_flush(config):
 
 #log all players that log on to server
 def login_check_all(online_list, server, config):
-    login_list = []
     for each_player in online_list:
-        if (each_player in state.currently_online_list[server]):
-            continue
-        state.append_current_list(server, each_player)
-        if (each_player in config.players):
-            play_sound("login.wav")
-            login_list.append(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-        else:
-            login_list.append(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
-    return login_list
+        if each_player not in state.currently_online_list[server]:
+            state.append_current_list(server, each_player)
+            if each_player in config.players:
+                play_sound("login.wav")
+                yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+            else:
+                yield (f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
 
 #log players in config who log on to server
 def login_check(online_list, server, config):
@@ -29,21 +26,16 @@ def login_check(online_list, server, config):
     for each_player in found_list:
         if (each_player in state.currently_online_list[server]):
             continue
-        yield f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
+        yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
         state.append_current_list(server, each_player)
         play_sound("login.wav")
 
 def login_check(online_list, server, config):
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
-        if each_player not in state.currently_online_list[server]:
-
-def login_check(online_list, server, config):
-    found_list = list(set(config.players).intersection(online_list))
-    for each_player in found_list:
         if each_player in (state.currently_online_list[server]):
             continue
-        yield f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
+        yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
         state.append_current_list(server, each_player)
         play_sound("login.wav")
 
@@ -54,9 +46,9 @@ def logout_check(online_list, server, config):
             state.remove_current_list(server, each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                yield f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}"
+                yield (f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
             else:
-                yield f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}"
+                yield (f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
 
 # quick command function that displays to users all online players in config servers
 def quick_check(config):
@@ -160,7 +152,7 @@ def stop(config):
     print (f"{Colour().red} Stopping checker...\n {Colour().default}")
     state.toggle_continue()
     for each_server in config.servers:
-        state.reset_current_list(each_server)
+        state.reset_current_list(each_server["url"])
     print(f"{Colour().red} Checker stopped.\n {Colour().default}")
 
 #main user input command line interface for application
