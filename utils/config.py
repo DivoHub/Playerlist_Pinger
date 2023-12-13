@@ -94,7 +94,7 @@ class Config:
                 self.players.remove(del_player)
                 update_config(self.__dict__)
             else:
-                print (f"{Colour().error} Player is not found in config {Colour().default}")
+                logging.info(f"{Colour().error} Player is not found in config {Colour().default}")
 
     #append new players to players list
     def add_player(self):
@@ -103,7 +103,7 @@ class Config:
             if (new_player.casefold() == ""):
                 break
             elif (new_player in self.players):
-                print (f"{Colour().warning} Player is already on list. {Colour().default}")
+                logging.info(f"{Colour().warning} Player is already on list. {Colour().default}")
             else:
                 self.players.append(new_player)
                 update_config(self.__dict__)
@@ -135,9 +135,9 @@ class Config:
             server_index = int(input(f"{Colour().default} Enter index (number) of server to change target for:    "))
             self.servers[server_index]['target'] = int(input(f"{Colour().default}Enter number target for {self.servers[server_index]['url']}:    "))
         except ValueError:
-            print(f"{Colour().error} Invalid input given. {Colour().default}")
+            logging.info(f"{Colour().error} Invalid input given. {Colour().default}")
         except IndexError:
-            print(f"{Colour().error} Index is out of range. {Colour().default}")
+            logging.info(f"{Colour().error} Index is out of range. {Colour().default}")
         else:
             update_config(self.__dict__)
 
@@ -155,7 +155,7 @@ class Config:
     #delete specified player from checking list in config
     def delete_server(self):
         if (len(self.servers) == 0):
-            print (f"{Colour().error}No servers to delete.{Colour().default}")
+            logging.info(f"{Colour().error}No servers to delete.{Colour().default}")
             return None
         elif (len(self.servers) == 1):
             deleted_server = self.servers.pop()
@@ -168,9 +168,9 @@ class Config:
         try:
             deleted_server = self.servers.pop(int(deletion_index))['url']
         except ValueError:
-            print (f"{Colour().error}Invalid Entry.{Colour().default}")
+            logging.info(f"{Colour().error}Invalid Entry.{Colour().default}")
         except IndexError:
-            print (f"{Colour().error}Input does not correspond to a server index.{Colour().default}")
+            logging.info(f"{Colour().error}Input does not correspond to a server index.{Colour().default}")
         else:
             update_config(self.__dict__)
             return deleted_server
@@ -180,6 +180,6 @@ class Config:
             try:
                 self.interval = int(input(f"{Colour().default} Enter an interval in seconds between each fetch (Anything lower than 10 seconds is not recommended):  "))
             except ValueError:
-                print (f"{Colour().error} Input Error {Colour().default}")
+                logging.info(f"{Colour().error} Input Error {Colour().default}")
             else:
                 update_config(self.__dict__)

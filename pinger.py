@@ -30,15 +30,6 @@ def login_check(online_list, server, config):
         state.append_current_list(server, each_player)
         play_sound("login.wav")
 
-def login_check(online_list, server, config):
-    found_list = list(set(config.players).intersection(online_list))
-    for each_player in found_list:
-        if each_player in (state.currently_online_list[server]):
-            continue
-        yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
-        state.append_current_list(server, each_player)
-        play_sound("login.wav")
-
 #log players that log out
 def logout_check(online_list, server, config):
     for each_player in state.currently_online_list[server]:
