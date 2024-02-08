@@ -21,3 +21,13 @@ def toggle_all_players(config):
         config.logall_on = True
         print (f"{Colour().green} Log All Players On.{Colour().default}")
     update_config(config.__dict__)
+
+#Toggle warning prompt to user if server player count exceeds 11 players
+def toggle_limit_warning(config):
+    if (config.limit_warning_on):
+        config.limit_warning_on = False
+        print (f"{Colour().red} Player count limit warning Off.{Colour().default}")
+    else:
+        config.logall_on = True
+        print (f"{Colour().green} Player count limit warning On.{Colour().default}")
+    update_config(config.__dict__)

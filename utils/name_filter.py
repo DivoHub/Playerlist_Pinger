@@ -22,3 +22,4 @@ def add_banned_words():
             banned_words.append(new_word)
             words_file.write(banned_words)
             words_file.close()
+

@@ -11,6 +11,7 @@ class Config:
         self.interval = 120
         self.logger_on = False
         self.logall_on = False
+        self.limit_warning_on = True
 
     #Prompts user to add values to config and creates config.json file with those values
     def initialize(self):

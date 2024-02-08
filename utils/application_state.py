@@ -17,12 +17,19 @@ class ApplicationState:
         self.target_reached = {}
         self.currently_online_list = {}
         self.error_count = 0
+        self.limit_exceeded = False
 
     def toggle_continue(self):
         if (self.continuing):
             self.continuing = False
         else:
             self.continuing = True
+
+    def toggle_limit_exceeded(self):
+        if (self.limit_exceeded):
+            self.limit_exceeded = False
+        else:
+            self.limit_exceeded = True
 
     def toggle_target_reached(self, server):
         if (self.target_reached[server]):
