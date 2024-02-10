@@ -80,7 +80,8 @@ def checker(config):
         yield from logout_check(online_list, each_server["url"], config)
         player_count = get_player_count(server_object)
         if (player_count > 11 and state.limit_exceeded == False) or (player_count < 11 and state.limit_exceeded == True):
-            state.toggle_limit_exceeded()
+            state.toggle_limit_exceeded(config.limit_warning_on)
+            state.exceed_warning(config.limit_warning_on, player_count)
         target_check(each_server, player_count)
 
 #looper thread sleeps for configured time

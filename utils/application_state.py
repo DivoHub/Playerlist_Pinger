@@ -25,7 +25,7 @@ class ApplicationState:
         else:
             self.continuing = True
 
-    def toggle_limit_exceeded(self):
+    def toggle_limit_exceeded(self, limit_warning_on):
         if (self.limit_exceeded):
             self.limit_exceeded = False
         else:
@@ -36,6 +36,13 @@ class ApplicationState:
             self.target_reached[server] = False
         else:
             self.target_reached[server] = True
+
+    def exceed_warning(self, warning_on, player_count):
+        if (warning_on and player_count > 11):
+            print (f"{Colour().warning}Player count has exceeded 11. Player logging will be inaccurate.{Colour().default}")
+        elif (warning_on and player_count <= 11):
+            print (f"{Colour().green}Player count no longer exceeded 11. Player logging will now work as intended.{Colour().default}")
+        return
 
     def append_current_list(self, server, player):
         self.currently_online_list[server].append(player)
