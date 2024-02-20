@@ -1,4 +1,6 @@
 from .colour import Colour
+import logging
+
 
 #appends each status into log file in local folder. Creates log file if none exists
 def logger(status_string):
@@ -22,3 +24,17 @@ def refresh_log():
         log_file.close()
         print ("Success!")
 
+def log_and_print(message, severity_level):
+    logging.basicConfig(filename='errors.log', level=logging.ERROR)
+
+    logging_levels = {
+        1: logging.DEBUG,
+        2: logging.INFO,
+        3: logging.WARNING,
+        4: logging.ERROR,
+        5: logging.CRITICAL
+    }
+
+    print(message)
+    if severity_level >= 4:
+        logging.log(logging_levels[severity_level], message)
