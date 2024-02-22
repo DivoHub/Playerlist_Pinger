@@ -34,7 +34,14 @@ def log_and_print(message, severity_level):
         4: logging.ERROR,
         5: logging.CRITICAL
     }
+    message_colour = {
+        1: Colour.default(),
+        2: Colour.blue(),
+        3: Colour.warning(),
+        4: Colour.red(),
+        5: Colour.error()
+    }
 
-    print(message)
+    print(f"{message_colour[severity_level]}{message}{Colour.default()})
     if severity_level >= 4:
         logging.log(logging_levels[severity_level], message)
