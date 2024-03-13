@@ -61,3 +61,4 @@ Telling me how trash the code is is also welcome
 
 ## Issues
 - No UI
+- Discord Implementation?
