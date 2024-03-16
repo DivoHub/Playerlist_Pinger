@@ -45,3 +45,76 @@ def log_and_print(message, severity_level):
     print(f"{message_colour[severity_level]}{message}{Colour.default()})
     if severity_level >= 4:
         logging.log(logging_levels[severity_level], message)
+
+        # main user input command line interface for application
+
+    def main(config):
+        case
+        "":
+        print(f"{Colour().default}\n")
+
+    case
+    "exit":
+    stop(config)
+    print(f"{Colour().red} Program exiting. {Colour().default}")
+    break
+
+
+case
+"addplayer":
+config.add_player()
+case
+"delplayer":
+config.delete_player()
+case
+"addserver":
+added_server = config.add_server()
+if (added_server == None):
+    continue
+state.add_current_list(added_server)
+case
+"delserver":
+deleted_server = config.delete_server()
+if (deleted_server == None):
+    continue
+state.delete_current_list(deleted_server)
+case
+"interval":
+config.change_interval()
+case
+"online":
+quick_check(config)
+case
+"target":
+config.change_target()
+case
+"config":
+config.print_values()
+case
+"logger":
+toggle_logger(config)
+case
+"logall":
+toggle_all_players(config)
+case
+"reload":
+config.load_config()
+config.print_values()
+case
+"newlog":
+refresh_log()
+case
+"newconfig":
+config.start_new()
+case
+"start":
+start(config)
+case
+"stop":
+stop(config)
+case
+"help":
+print_manual()
+case
+_:
+print(f"{Colour().error} Unknown command. {Colour().default}")
