@@ -1,9 +1,14 @@
 import discord
-import re
+import os
+from dotenv import load_dotenv, dotenv_values, set_key
 from threading import Thread, active_count
 from datetime import datetime
 from time import sleep
 from utils import *
+intents = discord.Intents.all()
+intents.members = True
+client = discord.Client(intents=intents)
+#client = discord.commands.Bot(command_prefix="+", intents=intents)
 
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush(config):
@@ -17,9 +22,9 @@ def login_check_all(online_list, server, config):
             state.append_current_list(server, each_player)
             if each_player in config.players:
                 play_sound("login.wav")
-                yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+                yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
             else:
-                yield (f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server} {Colour().default}")
+                yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
 
 #log players in config who log on to server
 def login_check(online_list, server, config):
@@ -27,7 +32,7 @@ def login_check(online_list, server, config):
     for each_player in found_list:
         if (each_player in state.currently_online_list[server]):
             continue
-        yield (f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+        yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
         state.append_current_list(server, each_player)
         play_sound("login.wav")
 
@@ -38,23 +43,25 @@ def logout_check(online_list, server, config):
             state.remove_current_list(server, each_player)
             if (each_player in config.players):
                 play_sound("logout.wav")
-                yield (f"{Colour().red} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}{Colour().default}")
+                yield (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
             else:
-                yield (f"{Colour().default} > {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                yield (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
 
 # quick command function that displays to users all online players in config servers
 def quick_check(config):
+    print_list = []
     for each_server in config.servers:
         server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
         if (online_list == None):
             return
-        print(f"{Colour().blue}  [ {get_player_count(server_object)} ] Players online. {Colour().default}")
+        print_list.append(f"[ {get_player_count(server_object)} ] Players online.")
         for each_player in online_list:
             if (each_player in config.players):
-                print(f"{Colour().green} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}{Colour().default}")
+                print_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
             else:
-                print(f"{Colour().default} > {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
+                print_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {each_server['url']}")
+    return print_list
 
 #check if server size has reached specified target number
 def target_check(server, player_count):
@@ -63,7 +70,7 @@ def target_check(server, player_count):
     if (player_count >= server['target'] and state.target_reached[server["url"]] is False):
         state.target_reached[server["url"]] = True
         play_sound("chime.wav")
-        print (f"{Colour().blue}[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        print (f"[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and state.target_reached[server["url"]] is True):
         state.target_reached[server["url"]] = False
 
@@ -112,16 +119,16 @@ def looper(config):
 #checks if checker is already running, and verifies the validity of config.json file
 def start_conditions_met(config):
     if (active_count() > 1):
-        print(f"{Colour().error} Checker already running.{Colour().default}")
+        print(f" Checker already running.)
         return False
     if (len(config.players) == 0):
-        print (f"{Colour().error} Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again. {Colour().default}")
+        print (f" Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again.")
         return False
     if (len(config.servers) == 0):
-        print (f"{Colour().error} Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again. {Colour().default}")
+        print (f" Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again.")
         return False
     if not (internet_is_working()):
-        print (f"{Colour().error} No internet connection. Check connection before starting.{Colour().default}")
+        print (f" No internet connection. Check connection before starting.")
         return False
     for each_server in config.servers:
         if not(server_is_valid(each_server["url"])):
@@ -132,25 +139,95 @@ def start_conditions_met(config):
 def start(config):
     config.load_config()
     if not (start_conditions_met(config)):
-        return
-    print (f"{Colour().green} Starting checker... {Colour().default}")
+        return False
+    print (f"Starting checker...")
     state.toggle_continue()
     process = Thread(target=lambda: looper(config))
     process.start()
-    print (f"{Colour().green} Checker started. {Colour().default}")
+    print (f" Checker started. ")
+    return True
 
 #stop application
 def stop(config):
     if (active_count() == 1):
-        print (f"{Colour().default} Checker not running.")
-        return
-    print (f"{Colour().red} Stopping checker...\n {Colour().default}")
+        print (f"Checker not running.")
+        return False
+    print (f"Stopping checker...\n ")
     state.toggle_continue()
     for each_server in config.servers:
         state.reset_current_list(each_server["url"])
-    print(f"{Colour().red} Checker stopped.\n {Colour().default}")
+    print(f"Checker stopped.\n ")
+    return True
 
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+    print('Ready!')
 
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    msg = message.content.lower()
+    if (msg.startswith(f'{prefix}ping')):
+        await message.channel.send('Pong.')
+    elif (msg.startswith(f'{prefix}online')):
+        print_list = quick_check(config)
+        for each_print in print_list:
+            await message.channel.send(each_print)
+    elif (msg.startswith(f'{prefix}start')):
+        if (start(config)):
+            await message.channel.send('Checker started.')
+        else:
+            await message.channel.send('Checker already started.')
+    elif (msg.startswith(f'{prefix}stop')):
+        if (stop(config)):
+            await message.channel.send('Checker stopped.')
+        else:
+            await message.channel.send('Checker is not on.')
+    elif (msg.startswith(f'{prefix}config')):
+
+        await message.channel.send('')
+    elif (msg.startswith(f'{prefix}logall')):
+        toggle_all_players(config)
+        await message.channel.send('')
+    elif (msg.startswith(f'{prefix}prefix')):
+        config.add_player()
+        await message.channel.send('')
+
+def change_prefix(new_prefix):
+    if (len(new_prefix) > 1):
+        return ("Prefix must be 1 character")
+    global prefix
+    prefix = new_prefix
+    os.environ["PREFIX"] = prefix
+    set_key(".env", "PREFIX", os.environ["PREFIX"])
+    return (f"Prefix changed to '{prefix}'")
+
+def load_key():
+    try:
+        key_file = open(".env","r")
+    except FileNotFoundError:
+        print ("No .env API key file given.")
+        user_input = str(input("Please enter an API Key. For help or more information please refer to Documentation: \n"))
+        new_key_file = open(".env","x")
+        new_key_file.write(f"API_KEY={user_input}\nPREFIX=+")
+        new_key_file.close()
+    finally:
+        key_file.close()
+        load_dotenv()
+
+def set_prefix():
+    global prefix
+    prefix = os.getenv("PREFIX")
+    if (len(prefix) > 1):
+        print ("Prefix must be 1 character. Check .env file before starting.")
+        return False
+    return True
+
+global prefix
+load_key()
+set_prefix()
 config = Config()
 config.load_config()
 config.print_values()
@@ -159,45 +236,4 @@ state.initialize()
 for each_server in config.servers:
     state.reset_current_list(each_server["url"])
     state.target_reached[each_server["url"]] = []
-main(config)
-client = discord.Client()
-
-
-def simplify_string(part_name):
-    part_name = str(part_name.upper())
-    simple_name = re.sub("[ -().]", "", part_name)
-    return simple_name
-
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-    print('Ready!')
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    msg = message.content.lower()
-    if (msg.startswith('$hello')):
-        await message.channel.send('Hello!')
-
-    elif (msg.startswith('$superuser')):
-
-
-    elif (msg.startswith('$myid')):
-        await message.channel.send('your Id is ' + str(client.user.id))
-        await message.channel.send('my mention is' + str(client.user.mention))
-        await message.channel.send(message.author.avatar_url)
-        await message.channel.send('your name is ' + str(message.author.mention))
-
-    elif (msg.startswith('$idof')):
-        userid = msg[msg.find('@'):]
-        await message.channel.send(userid)
-
-
-with open("token.txt", "r") as file:
-    token = str(file)
-    file.close()
-client.run(token)
+client.run(os.getenv("API_KEY"))
