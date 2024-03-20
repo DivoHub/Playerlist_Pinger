@@ -64,6 +64,34 @@ online
 help
     -displays command list
 
+
+
+`````````````````````````````
+Discord Bot Commands (Default prefix is + can be changed typing "prefix " followed by symbol)
+`````````````````````````````
+{prefix}ping
+    -Ping the bot to see if it is running.
+
+{prefix}setchannel
+    -Set the current channel for logging
+
+{prefix}prefix
+    -Change the prefix of bot commands within these range of characters (can only be 1): *&^%$#@!+_=|?><.:;~
+
+{prefix}start
+    -start checker
+
+{prefix}stop
+    -stop checker
+
+{prefix}logall
+    -Print and log all players who log onto the server (no notification sound if player not on checking list)
+
+{prefix}online
+    -print current list of players online
+
+
+
 ---------------------
 made by darrxh
 source repo: github.com/darrxh/Minebell

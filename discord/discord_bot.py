@@ -199,7 +199,10 @@ async def on_message(message):
         else:
             await message.channel.send('Checker stopped.')
     elif (msg.startswith(f'{os.getenv("PREFIX")}config')):
-        await message.channel.send("")
+        await message.channel.send((f"Searching for {len(config.players)} players: {str(config.players)}"))
+        await message.channel.send((f"On {len(config.servers)} Servers: "))
+        for each_server in config.servers:
+            await message.channel.send((f"{each_server['url']}"))
     elif (msg.startswith(f'{os.getenv("PREFIX")}setchannel')):
         change_channel(message.channel.id)
         await message.channel.send(f"{message.channel} is now set for logs.")
