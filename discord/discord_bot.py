@@ -3,7 +3,6 @@ from discord.ext import tasks
 import os
 from re import search
 from dotenv import load_dotenv, set_key
-from threading import Thread, active_count
 from datetime import datetime
 from utils import *
 
@@ -15,35 +14,38 @@ def currently_online_flush(config):
 
 #log all players that log on to server
 def login_check_all(online_list, server, config):
+    print_list = []
     for each_player in online_list:
         if each_player not in state.currently_online_list[server]:
             state.append_current_list(server, each_player)
             if each_player in config.players:
-                play_sound("login.wav")
-                yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                print_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
             else:
-                yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                print_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+    return print_list
 
 #log players in config who log on to server
 def login_check(online_list, server, config):
+    print_list = []
     found_list = list(set(config.players).intersection(online_list))
     for each_player in found_list:
         if (each_player in state.currently_online_list[server]):
             continue
-        yield (f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+        print_list.append(f"> {each_player} seen online at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
         state.append_current_list(server, each_player)
-        play_sound("login.wav")
+    return print_list
 
 #log players that log out
 def logout_check(online_list, server, config):
+    print_list = []
     for each_player in state.currently_online_list[server]:
         if (each_player not in online_list):
             state.remove_current_list(server, each_player)
             if (each_player in config.players):
-                play_sound("logout.wav")
-                yield (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                print_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
             else:
-                yield (f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+                print_list.append(f"> {each_player} logged off at {datetime.now().strftime('%D  %H:%M:%S')} on Server: {server}")
+    return print_list
 
 # quick command function that displays to users all online players in config servers
 def quick_check(config):
@@ -67,8 +69,7 @@ def target_check(server, player_count):
         return
     if (player_count >= server['target'] and state.target_reached[server["url"]] is False):
         state.target_reached[server["url"]] = True
-        play_sound("chime.wav")
-        print (f"[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        return (f"[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and state.target_reached[server["url"]] is True):
         state.target_reached[server["url"]] = False
 
@@ -77,24 +78,22 @@ def checker(config):
     for each_server in config.servers:
         server_object = get_server_object(each_server["url"])
         online_list = get_online_list(server_object)
+        print_list = []
         if (online_list is None):
             return
         if (config.logall_on):
-            yield from login_check_all(online_list, each_server["url"], config)
+            print_list.extend(login_check_all(online_list, each_server["url"], config))
         else:
-            yield from login_check(online_list, each_server["url"], config)
-        yield from logout_check(online_list, each_server["url"], config)
+            print_list.extend(login_check(online_list, each_server["url"], config))
+        print_list.extend(logout_check(online_list, each_server["url"], config))
         player_count = get_player_count(server_object)
         if (player_count > 11 and state.limit_exceeded == False) or (player_count < 11 and state.limit_exceeded == True):
             state.toggle_limit_exceeded(config.limit_warning_on)
             state.exceed_warning(config.limit_warning_on, player_count)
-        target_check(each_server, player_count)
+        return print_list
 
 #checks if checker is already running, and verifies the validity of config.json file
 def start_conditions_met(config):
-    if (active_count() > 1):
-        print("Checker already running.")
-        return False
     if (len(config.players) == 0):
         print (" Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again.")
         return False
@@ -107,30 +106,6 @@ def start_conditions_met(config):
     for each_server in config.servers:
         if not(server_is_valid(each_server["url"])):
             return False
-    return True
-
-#start application
-def start(config):
-    config.load_config()
-    if not (start_conditions_met(config)):
-        return False
-    print ("Starting checker...")
-    state.toggle_continue()
-    process = Thread(target=lambda: looper(config))
-    process.start()
-    print (" Checker started. ")
-    return True
-
-#stop application
-def stop(config):
-    if (active_count() == 1):
-        print ("Checker not running.")
-        return False
-    print ("Stopping checker...\n ")
-    state.toggle_continue()
-    for each_server in config.servers:
-        state.reset_current_list(each_server["url"])
-    print("Checker stopped.\n ")
     return True
 
 def load_env():
