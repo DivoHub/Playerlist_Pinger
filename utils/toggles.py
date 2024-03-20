@@ -15,7 +15,6 @@ def toggle_logger(config):
 def toggle_all_players(config):
     if (config.logall_on):
         config.logall_on = False
-        currently_online_flush()
         print (f"{Colour().red} Log All Players Off.{Colour().default}")
     else:
         config.logall_on = True

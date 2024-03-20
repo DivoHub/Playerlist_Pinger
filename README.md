@@ -60,6 +60,21 @@ python3 pinger.py
  ![config example](https://i.ibb.co/B3pD02q/Screenshot-2023-09-02-113850.png)
 
 
+### Discord Bot Implementation
+
+1. Install dependencies using PIP
+```bash
+pip install -r requirements.txt
+```
+2. Create a Discord Bot following [this guide](https://discordpy.readthedocs.io/en/stable/discord.html)
+- For scopes, only "bot" needs to be checked
+- For permissions, only "send messages" needs to be checked
+
+3. Run discord_bot.py inside the 'discord' directory
+
+4. You will be prompted for the Bot Token. Copy, paste, then enter your Bot Token key.
+5. Invite bot to your server.
+6. 
 
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
@@ -72,4 +87,4 @@ Telling me how trash the code is is also welcome
 
 ## Issues
 - No UI
-- Discord Implementation?
+- More Discord controls over config file
