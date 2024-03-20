@@ -1,14 +1,12 @@
 import discord
 import os
-from dotenv import load_dotenv, dotenv_values, set_key
+from re import search
+from dotenv import load_dotenv, set_key
 from threading import Thread, active_count
 from datetime import datetime
 from time import sleep
 from utils import *
-intents = discord.Intents.all()
-intents.members = True
-client = discord.Client(intents=intents)
-#client = discord.commands.Bot(command_prefix="+", intents=intents)
+
 
 #flushes the online list of all players who are not listed in config.json
 def currently_online_flush(config):
@@ -119,16 +117,16 @@ def looper(config):
 #checks if checker is already running, and verifies the validity of config.json file
 def start_conditions_met(config):
     if (active_count() > 1):
-        print(f" Checker already running.)
+        print("Checker already running.")
         return False
     if (len(config.players) == 0):
-        print (f" Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again.")
+        print (" Checker cannot start if there are no players to look for. \nCheck configurations or add players and try again.")
         return False
     if (len(config.servers) == 0):
-        print (f" Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again.")
+        print (" Checker cannot start if there are no servers to check. \nCheck configurations or add servers and try again.")
         return False
     if not (internet_is_working()):
-        print (f" No internet connection. Check connection before starting.")
+        print (" No internet connection. Check connection before starting.")
         return False
     for each_server in config.servers:
         if not(server_is_valid(each_server["url"])):
@@ -140,69 +138,24 @@ def start(config):
     config.load_config()
     if not (start_conditions_met(config)):
         return False
-    print (f"Starting checker...")
+    print ("Starting checker...")
     state.toggle_continue()
     process = Thread(target=lambda: looper(config))
     process.start()
-    print (f" Checker started. ")
+    print (" Checker started. ")
     return True
 
 #stop application
 def stop(config):
     if (active_count() == 1):
-        print (f"Checker not running.")
+        print ("Checker not running.")
         return False
-    print (f"Stopping checker...\n ")
+    print ("Stopping checker...\n ")
     state.toggle_continue()
     for each_server in config.servers:
         state.reset_current_list(each_server["url"])
-    print(f"Checker stopped.\n ")
+    print("Checker stopped.\n ")
     return True
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-    print('Ready!')
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    msg = message.content.lower()
-    if (msg.startswith(f'{prefix}ping')):
-        await message.channel.send('Pong.')
-    elif (msg.startswith(f'{prefix}online')):
-        print_list = quick_check(config)
-        for each_print in print_list:
-            await message.channel.send(each_print)
-    elif (msg.startswith(f'{prefix}start')):
-        if (start(config)):
-            await message.channel.send('Checker started.')
-        else:
-            await message.channel.send('Checker already started.')
-    elif (msg.startswith(f'{prefix}stop')):
-        if (stop(config)):
-            await message.channel.send('Checker stopped.')
-        else:
-            await message.channel.send('Checker is not on.')
-    elif (msg.startswith(f'{prefix}config')):
-
-        await message.channel.send('')
-    elif (msg.startswith(f'{prefix}logall')):
-        toggle_all_players(config)
-        await message.channel.send('')
-    elif (msg.startswith(f'{prefix}prefix')):
-        config.add_player()
-        await message.channel.send('')
-
-def change_prefix(new_prefix):
-    if (len(new_prefix) > 1):
-        return ("Prefix must be 1 character")
-    global prefix
-    prefix = new_prefix
-    os.environ["PREFIX"] = prefix
-    set_key(".env", "PREFIX", os.environ["PREFIX"])
-    return (f"Prefix changed to '{prefix}'")
 
 def load_key():
     try:
@@ -214,26 +167,95 @@ def load_key():
         new_key_file.write(f"API_KEY={user_input}\nPREFIX=+")
         new_key_file.close()
     finally:
-        key_file.close()
         load_dotenv()
 
+def change_channel(channel):
+    try:
+        os.environ["CHANNEL_ID"] = str(channel)
+        set_key(".env", "CHANNEL_ID", os.environ["CHANNEL_ID"])
+    except Exception:
+        print ("Error occurred changing Channel_ID for logs.")
+        return False
+    else:
+        return True
+
+def change_prefix(new_prefix):
+    if (len(new_prefix) > 1):
+        return ("Prefix must be 1 character")
+    os.environ["PREFIX"] = new_prefix
+    set_key(".env", "PREFIX", os.environ["PREFIX"])
+    return (f"Prefix changed to {os.environ['PREFIX']}")
+
+def set_channel():
+    try:
+        channel_id = os.getenv("CHANNEL_ID")
+    except Exception:
+        print ("Channel ID is not set in .env file. Type ")
+
 def set_prefix():
-    global prefix
     prefix = os.getenv("PREFIX")
     if (len(prefix) > 1):
         print ("Prefix must be 1 character. Check .env file before starting.")
         return False
     return True
 
+intents = discord.Intents.all()
+intents.members = True
+client = discord.Client(intents=intents)
+#client = discord.commands.Bot(command_prefix="+", intents=intents)
 global prefix
+global channel_id
 load_key()
 set_prefix()
+set_channel()
 config = Config()
 config.load_config()
-config.print_values()
 state = ApplicationState()
 state.initialize()
 for each_server in config.servers:
     state.reset_current_list(each_server["url"])
     state.target_reached[each_server["url"]] = []
+
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+    print('Ready!')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    msg = message.content.lower()
+    if (msg.startswith(f'{os.getenv("PREFIX")}ping')):
+        await message.channel.send('Pong.')
+
+    elif (msg.startswith(f'{os.getenv("PREFIX")}online')):
+        print_list = quick_check(config)
+        for each_print in print_list:
+            await message.channel.send(each_print)
+    elif (msg.startswith(f'{os.getenv("PREFIX")}start')):
+        if (start(config)):
+            await message.channel.send('Checker started.')
+        else:
+            await message.channel.send('Checker already started.')
+    elif (msg.startswith(f'{os.getenv("PREFIX")}stop')):
+        if (stop(config)):
+            await message.channel.send('Checker stopped.')
+        else:
+            await message.channel.send('Checker is not on.')
+    elif (msg.startswith(f'{os.getenv("PREFIX")}config')):
+
+        await message.channel.send('')
+    elif (msg.startswith(f'{os.getenv("PREFIX")}setchannel')):
+        change_channel(message.channel.id)
+        await message.channel.send(f"{message.channel} is now set for logs.")
+    elif (msg.startswith(f'{os.getenv("PREFIX")}logall')):
+        toggle_all_players(config)
+        await message.channel.send('')
+    elif (msg.startswith(f'{os.getenv("PREFIX")}prefix')):
+        if (len(msg) != 8 and " " not in msg[-2:] and not bool(search("[*&^%$#@!+_=|?><.:;~]", msg[-1:]))):
+            await message.channel.send("Prefix must be 1 character from selection: *&^%$#@!+_=|?><.:;~")
+            return
+        await message.channel.send(change_prefix(msg[-1:]))
+
 client.run(os.getenv("API_KEY"))
