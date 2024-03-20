@@ -18,6 +18,17 @@ This application utilizes the ***mcstatus*** library to incrementally fetch serv
   - License: Apache License 2.0
   - [GitHub Repository](https://github.com/py-mine/mcstatus)
 
+- **discord.py** | (Used only if integrating Discord Bot)
+  - License: MIT
+  - [GitHub Repository](https://github.com/Rapptz/discord.py)
+
+- **python-dotenv** | (Used only if integrating Discord Bot)
+  - License: BSD-3-Clause License
+  - [GitHub Repository](https://github.com/theskumar/python-dotenv)
+
+
+
+
 
 ## Usage
 1. Clone Repo or download/unzip folder onto local machine
