@@ -169,6 +169,8 @@ async def looper():
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    print('Checker starting...')
+    looper.start()
     print('Ready!')
 
 @client.event
@@ -183,11 +185,19 @@ async def on_message(message):
         for each_print in print_list:
             await message.channel.send(each_print)
     elif (msg.startswith(f'{os.getenv("PREFIX")}start')):
-        looper.start()
-        await message.channel.send('Checker started.')
+        try:
+            looper.start()
+        except RuntimeError:
+            await message.channel.send('Checker is already running')
+        else:
+            await message.channel.send('Checker started.')
     elif (msg.startswith(f'{os.getenv("PREFIX")}stop')):
-        looper.stop()
-        await message.channel.send('Checker stopped.')
+        try:
+            looper.stop()
+        except RuntimeError:
+            await message.channel.send('Checker is not running.')
+        else:
+            await message.channel.send('Checker stopped.')
     elif (msg.startswith(f'{os.getenv("PREFIX")}config')):
         await message.channel.send("")
     elif (msg.startswith(f'{os.getenv("PREFIX")}setchannel')):

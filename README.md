@@ -74,7 +74,7 @@ pip install -r requirements.txt
 
 4. You will be prompted for the Bot Token. Copy, paste, then enter your Bot Token key.
 5. Invite bot to your server.
-6. 
+6. Refer to the help.txt guide for commands
 
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
