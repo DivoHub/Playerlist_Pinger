@@ -69,7 +69,7 @@ def target_check(server, player_count):
         return
     if (player_count >= server['target'] and state.target_reached[server["url"]] is False):
         state.target_reached[server["url"]] = True
-        return (f"[ {server['url']} ] has hit {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
+        return (f"[ {server['url']} ] reached {server['target']} players at {datetime.now().strftime('%D  %H:%M:%S')} ")
     elif (player_count < server['target'] and state.target_reached[server["url"]] is True):
         state.target_reached[server["url"]] = False
 
@@ -90,6 +90,9 @@ def checker(config):
         if (player_count > 11 and state.limit_exceeded == False) or (player_count < 11 and state.limit_exceeded == True):
             state.toggle_limit_exceeded(config.limit_warning_on)
             state.exceed_warning(config.limit_warning_on, player_count)
+        target_check_string = target_check(each_server, player_count)
+        if (target_check_string):
+            print_list.append(target_check_string)
         return print_list
 
 #checks if checker is already running, and verifies the validity of config.json file
@@ -166,6 +169,7 @@ async def looper():
     for each_status in status_log:
         await channel.send(each_status)
 
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -218,6 +222,15 @@ async def on_message(message):
         if (len(msg) != 8 and " " not in msg[-2:] and not bool(search("[*&^%$#@!+_=|?><.:;~]", msg[-1:]))):
             await message.channel.send("Prefix must be 1 character from selection: *&^%$#@!+_=|?><.:;~")
             return
-        await message.channel.send(change_prefix(msg[-1:]))
+    elif (msg.startswith(f'{os.getenv("PREFIX")}addplayer ')):
+        player = msg.split()[-1]
+        config.players.append(player)
+        config.update_config(config.__dict__)
+        await message.channel.send(f"{player} has been added to the config.")
+    elif (msg.startswith(f'{os.getenv("PREFIX")}addserver ')):
+        server = msg.split()[-1]
+        config.servers.append{"url": server, "target": 10}
+        config.update_config(config.__dict__)
+        await message.channel.send(f"{server} has been added to the config.")
 
 client.run(os.getenv("API_KEY"))

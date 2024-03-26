@@ -25,7 +25,7 @@ class ApplicationState:
         else:
             self.continuing = True
 
-    def toggle_limit_exceeded(self, limit_warning_on):
+    def toggle_limit_exceeded(self):
         if (self.limit_exceeded):
             self.limit_exceeded = False
         else:
