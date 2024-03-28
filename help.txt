@@ -67,7 +67,7 @@ help
 
 
 `````````````````````````````
-Discord Bot Commands (Default prefix is + can be changed typing "prefix " followed by symbol)
+Discord Bot Commands (Default prefix is "+". It can be changed typing "prefix " followed by symbol)
 `````````````````````````````
 {prefix}ping
     -Ping the bot to see if it is running.
@@ -76,7 +76,10 @@ Discord Bot Commands (Default prefix is + can be changed typing "prefix " follow
     -Set the current channel for logging
 
 {prefix}prefix
-    -Change the prefix of bot commands within these range of characters (can only be 1): *&^%$#@!+_=|?><.:;~
+    -Change the prefix of bot commands within these range of characters (can only be 1 character long): *&^%$#@!+_=|?><.:;~
+
+{prefix}config
+    -Prints the list of servers and players specified in the config file.
 
 {prefix}start
     -start checker
@@ -90,7 +93,17 @@ Discord Bot Commands (Default prefix is + can be changed typing "prefix " follow
 {prefix}online
     -print current list of players online
 
+{prefix}addserver {server}
+    -Add server to config. Type the IP of the server following the "addserver" command. Default target set to 10. (ex: +addserver server1.net)
 
+{prefix}delserver {server}
+    -Delete server from config. Type the IP of the server following the "delserver" command. (ex: +delserver server1.net)
+
+{prefix}addplayer {player}
+    -Add player to config. Type the in-game player name following the "addplayer" command. (ex: +addplayer player1)
+
+{prefix}delplayer {player}
+    -Delete a player from the config. Type the in-game player name following the "delplayer" command. (ex: +delplayer player1)
 
 ---------------------
 made by darrxh

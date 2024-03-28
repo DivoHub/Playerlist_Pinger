@@ -140,6 +140,12 @@ def change_prefix(new_prefix):
     set_key(".env", "PREFIX", os.environ["PREFIX"])
     return (f"Prefix changed to {os.environ['PREFIX']}")
 
+def delete_server(server_list, ip):
+    for each_server in server_list:
+        if (each_server["url"] == ip):
+            server_list.remove(each_server)
+            break
+
 intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
@@ -229,6 +235,22 @@ async def on_message(message):
         await message.channel.send(f"{player} has been added to the config.")
     elif (msg.startswith(f'{os.getenv("PREFIX")}addserver ')):
         server = msg.split()[-1]
+        config.servers.append{"url": server, "target": 10}
+        config.update_config(config.__dict__)
+        await message.channel.send(f"{server} has been added to the config.")
+    elif (msg.startswith(f'{os.getenv("PREFIX")}delplayer ')):
+        player = msg.split()[-1]
+        try:
+            config.players.remove(player)
+        except ValueError:
+            await message.channel.send(f"{player} is not found in the config.")
+        else:
+            config.update_config(config.__dict__)
+            await message.channel.send(f"{player} has been added to the config.")
+    elif (msg.startswith(f'{os.getenv("PREFIX")}delserver ')):
+        server = msg.split()[-1]
+        try:
+            config.servers.remove()
         config.servers.append{"url": server, "target": 10}
         config.update_config(config.__dict__)
         await message.channel.send(f"{server} has been added to the config.")
