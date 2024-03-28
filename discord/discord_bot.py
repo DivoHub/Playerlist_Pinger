@@ -144,7 +144,8 @@ def delete_server(server_list, ip):
     for each_server in server_list:
         if (each_server["url"] == ip):
             server_list.remove(each_server)
-            break
+            return True
+    return Exception ValueError
 
 intents = discord.Intents.all()
 intents.members = True
@@ -250,9 +251,11 @@ async def on_message(message):
     elif (msg.startswith(f'{os.getenv("PREFIX")}delserver ')):
         server = msg.split()[-1]
         try:
-            config.servers.remove()
-        config.servers.append{"url": server, "target": 10}
-        config.update_config(config.__dict__)
-        await message.channel.send(f"{server} has been added to the config.")
+            delete_server(config.servers, server)
+        except ValueError:
+            await message.channel.send(f"{server} was not found in the config.")
+        else:
+            config.update_config(config.__dict__)
+            await message.channel.send(f"{server} has been added to the config.")
 
 client.run(os.getenv("API_KEY"))
