@@ -5,10 +5,9 @@ Simple console application that pings user and logs when any specified players a
 ## Overview
 This application utilizes the ***mcstatus*** library to incrementally fetch server data on the user's behalf.
 
----
+
 
 ## Dependencies
-
 - **Python V3.10** (or later)
 
 
@@ -29,9 +28,6 @@ This application utilizes the ***mcstatus*** library to incrementally fetch serv
   - [GitHub Repository](https://github.com/theskumar/python-dotenv)
 
 
-
-
----
 ## Usage
 1. Clone Repo or download/unzip folder onto local machine
 
@@ -83,8 +79,6 @@ pip install -r requirements.txt
 ## Contributing
 Pull requests are welcome. Please specify fixes/changes.  
 Telling me how trash the code is is also welcome
-
----
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
