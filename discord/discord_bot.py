@@ -145,7 +145,7 @@ def delete_server(server_list, ip):
         if (each_server["url"] == ip):
             server_list.remove(each_server)
             return True
-    return Exception ValueError
+    raise ValueError
 
 intents = discord.Intents.all()
 intents.members = True
